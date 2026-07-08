@@ -1,0 +1,30 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Restitution de {{ outil.nom }}{% endblock %}
+
+{% block body %}
+<div class="container mt-5" style="max-width: 600px;">
+    <div class="card shadow border-0 bg-white p-4">
+        <h2 class="h4 fw-bold text-dark border-bottom pb-2 mb-4">🤝 Restitution de l'outil</h2>
+
+        <p>Vous êtes sur le point de rendre l'outil <strong>{{ outil.nom }}</strong> à son propriétaire.</p>
+        <p class="text-muted small">Pour maintenir la confiance au sein de la communauté, merci de laisser un avis sur cette expérience.</p>
+
+        {{ form_start(form) }}
+            <div class="mb-3">
+                {{ form_label(form.note) }}
+                {{ form_widget(form.note) }}
+            </div>
+            <div class="mb-3">
+                {{ form_label(form.commentaire) }}
+                {{ form_widget(form.commentaire) }}
+            </div>
+
+            <div class="d-flex justify-content-between mt-4">
+                <a href="{{ path('app_profil') }}" class="btn btn-light btn-sm">Annuler</a>
+                <button type="submit" class="btn btn-success btn-sm">Valider le rendu et l'avis</button>
+            </div>
+        {{ form_end(form) }}
+    </div>
+</div>
+{% endblock %}
