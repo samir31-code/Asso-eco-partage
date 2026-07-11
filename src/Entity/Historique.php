@@ -4,9 +4,10 @@ namespace App\Entity;
 
 use App\Entity\User;
 use App\Entity\Outil;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\DBAL\Types\Types;
 use App\Repository\HistoriqueRepository;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: HistoriqueRepository::class)]
 class Historique
@@ -31,6 +32,12 @@ class Historique
     private ?User $user = null;
 
     #[ORM\Column(nullable: true)]
+    #[Assert\Range(
+        min: 1,
+        max: 5,
+        notInRangeMessage: 'La note doit être comprise entre {{ min }} et {{ max }} étoiles.',
+    )]
+    #[Assert\Type(type: 'integer', message: 'La note doit être un nombre entier.')]
     private ?int $note = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]

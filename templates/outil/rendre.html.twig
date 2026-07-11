@@ -1,30 +1,92 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Restitution de {{ outil.nom }}{% endblock %}
+{% block title %}Restitution de l'outil - Eco-Partage
+{% endblock %}
 
 {% block body %}
-<div class="container mt-5" style="max-width: 600px;">
-    <div class="card shadow border-0 bg-white p-4">
-        <h2 class="h4 fw-bold text-dark border-bottom pb-2 mb-4">🤝 Restitution de l'outil</h2>
+	<div class="d-flex justify-content-center align-items-center" style="min-height: 70vh;">
+		<div class="card shadow p-4 bg-white rounded" style="max-width: 600px; width: 100%;">
+			<h2 class="h4 fw-bold mb-3">🤝 Restitution de l'outil</h2>
+			<p>Vous êtes sur le point de rendre l'outil
+				<strong>{{ outil.nom }}</strong>
+				à son propriétaire.</p>
+			<p class="text-muted small">Pour maintenir la confiance au sein de la communauté, merci de laisser un avis sur cette expérience.</p>
 
-        <p>Vous êtes sur le point de rendre l'outil <strong>{{ outil.nom }}</strong> à son propriétaire.</p>
-        <p class="text-muted small">Pour maintenir la confiance au sein de la communauté, merci de laisser un avis sur cette expérience.</p>
+			{{ form_start(form) }}
 
-        {{ form_start(form) }}
-            <div class="mb-3">
-                {{ form_label(form.note) }}
-                {{ form_widget(form.note) }}
-            </div>
-            <div class="mb-3">
-                {{ form_label(form.commentaire) }}
-                {{ form_widget(form.commentaire) }}
-            </div>
+			{# 🌟 Zone de notation par étoiles #}
+			<div class="mb-4 text-center">
+				<label class="form-label fw-semibold text-dark d-block text-start">Note sur 5</label>
 
-            <div class="d-flex justify-content-between mt-4">
-                <a href="{{ path('app_profil') }}" class="btn btn-light btn-sm">Annuler</a>
-                <button type="submit" class="btn btn-success btn-sm">Valider le rendu et l'avis</button>
-            </div>
-        {{ form_end(form) }}
-    </div>
-</div>
+				<div class="rating-css">
+					<div
+						class="star-icon">
+						{# Étoile 1 #}
+						<input type="radio" value="1" name="{{ form.note.vars.full_name }}" id="rating1" {% if form.note.vars.value == 1 %} checked {% endif %} required>
+						<label for="rating1" class="fa fa-star"></label>
+
+						{# Étoile 2 #}
+						<input type="radio" value="2" name="{{ form.note.vars.full_name }}" id="rating2" {% if form.note.vars.value == 2 %} checked {% endif %}>
+						<label for="rating2" class="fa fa-star"></label>
+
+						{# Étoile 3 #}
+						<input type="radio" value="3" name="{{ form.note.vars.full_name }}" id="rating3" {% if form.note.vars.value == 3 %} checked {% endif %}>
+						<label for="rating3" class="fa fa-star"></label>
+
+						{# Étoile 4 #}
+						<input type="radio" value="4" name="{{ form.note.vars.full_name }}" id="rating4" {% if form.note.vars.value == 4 %} checked {% endif %}>
+						<label for="rating4" class="fa fa-star"></label>
+
+						{# Étoile 5 #}
+						<input type="radio" value="5" name="{{ form.note.vars.full_name }}" id="rating5" {% if form.note.vars.value == 5 %} checked {% endif %}>
+						<label for="rating5" class="fa fa-star"></label>
+					</div>
+				</div>
+
+				{# On affiche uniquement le reste du formulaire (le commentaire), le select de base est ignoré #}
+				{% do form.note.setRendered %}
+			</div>
+
+			<div class="mb-4">
+				{{ form_row(form.commentaire, {'attr': {'class': 'form-control', 'rows': 4, 'placeholder': 'Ex: L\'outil fonctionne super bien ou rendu propre et à l\'heure...'}}) }}
+			</div>
+
+			<div class="d-flex justify-content-between align-items-center">
+				<a href="{{ path('app_profil') }}" class="btn btn-outline-secondary">Annuler</a>
+				<button type="submit" class="btn btn-success fw-bold px-4">Valider le rendu et l'avis</button>
+			</div>
+			{{ form_end(form) }}
+		</div>
+	</div>
+
+	{# 🎨 Styles dédiés pour l'interactivité et la couleur dorée #}
+	<style>
+		/* Style du conteneur d'étoiles */
+		.rating-css {
+			display: flex;
+			justify-content: start;
+		}
+		.rating-css .star-icon {
+			display: inline-flex;
+			flex-direction: row-reverse; /* Inversion pour gérer l'allumage progressif */
+		}
+		/* Masquer les boutons radio d'origine */
+		.rating-css .star-icon input {
+			display: none;
+		}
+		/* Style des étoiles par défaut (Gris) */
+		.rating-css .star-icon label {
+			color: #ccc;
+			font-size: 35px;
+			padding: 0 4px;
+			cursor: pointer;
+			transition: color 0.15s ease-in-out;
+		}
+		/* Allumage au survol et au clic (Jaune) */
+		.rating-css .star-icon input:checked ~ label,
+		.rating-css .star-icon label:hover,
+		.rating-css .star-icon label:hover ~ label {
+			color: #ffc107;
+		}
+	</style>
 {% endblock %}

@@ -4,10 +4,10 @@ namespace App\Form;
 
 use App\Entity\Historique;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 
 class AvisType extends AbstractType
 {
@@ -17,11 +17,11 @@ class AvisType extends AbstractType
             ->add('note', ChoiceType::class, [
                 'label' => 'Note sur 5',
                 'choices' => [
-                    '⭐' => 1,
-                    '⭐⭐' => 2,
-                    '⭐⭐⭐' => 3,
-                    '⭐⭐⭐⭐' => 4,
-                    '⭐⭐⭐⭐⭐' => 5,
+                    '1' => 1,
+                    '2' => 2,
+                    '3' => 3,
+                    '4' => 4,
+                    '5' => 5,
                 ],
                 'attr' => ['class' => 'form-select']
             ])

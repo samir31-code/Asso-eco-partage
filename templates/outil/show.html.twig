@@ -51,55 +51,10 @@
                         </tbody>
                     </table>
 
-                    {# 🔒 BLOC ACTIONS SOCLE SECURISE #}
+                    {# 🔒 BLOC ACTIONS SOCLE SECURISE (Appel du fragment réutilisable) #}
                     <div class="card bg-light border-0 mt-4">
                         <div class="card-body d-flex align-items-center justify-content-between p-3">
-
-                            {% if not is_granted('ROLE_MEMBRE') %}
-                                <div class="text-muted small me-2">
-                                    ⚠️ L'emprunt est réservé aux membres ayant réglé leur cotisation annuelle.
-                                </div>
-                                <a href="{{ path('app_cotisation_paiement') }}" class="btn btn-warning fw-bold px-4 text-dark">
-                                    💳 Cotiser (15,00 €)
-                                </a>
-                            {% else %}
-
-                                {% if not outil.emprunteur and app.user != outil.proprietaire %}
-                                    <div class="text-success fw-semibold">
-                                        ✅ Cet outil est disponible à l'emprunt.
-                                    </div>
-                                    <form action="{{ path('app_outil_emprunter', {'id': outil.id}) }}" method="POST" class="m-0">
-                                        <input type="hidden" name="_token" value="{{ csrf_token('emprunter' ~ outil.id) }}">
-                                        <button type="submit" class="btn btn-success px-4">
-                                            🔑 Emprunter cet outil
-                                        </button>
-                                    </form>
-
-                                {% elseif outil.emprunteur == app.user %}
-                                    <div class="text-primary fw-semibold">
-                                        ℹ️ Vous avez actuellement cet outil.
-                                    </div>
-                                    <form action="{{ path('app_outil_rendre', {'id': outil.id}) }}" method="POST" class="m-0">
-                                        <input type="hidden" name="_token" value="{{ csrf_token('rendre' ~ outil.id) }}">
-                                        <button type="submit" class="btn btn-warning text-dark fw-bold px-4">
-                                            📦 Rendre l'outil
-                                        </button>
-                                    </form>
-
-                                {% elseif outil.emprunteur %}
-                                    <div class="text-danger fw-semibold">
-                                        ❌ Indisponible : Emprunté par {{ outil.emprunteur.prenom }}.
-                                    </div>
-                                    <button class="btn btn-secondary px-4" disabled>Indisponible</button>
-
-                                {% elseif app.user == outil.proprietaire %}
-                                    <div class="text-muted small">
-                                        🛠️ C'est votre outil.
-                                    </div>
-                                    <button class="btn btn-secondary px-4" disabled>Mon outil</button>
-                                {% endif %}
-
-                            {% endif %}
+                            {{ include('outil/_bouton_emprunt.html.twig', {'outil': outil}) }}
                         </div>
                     </div>
 
@@ -121,4 +76,62 @@
 
     </div>
 </div>
+
+<hr class="my-5">
+
+    {# 💬 Section des Avis & Commentaires #}
+    <div class="row mb-5">
+        <div class="col-12 col-lg-8 mx-auto">
+            <h3 class="h4 fw-bold text-dark mb-4">💬 Avis des utilisateurs</h3>
+
+            {% set aDesAvis = false %}
+
+            <div class="d-flex flex-column gap-3">
+                {% for historique in outil.historiques %}
+                    {# On n'affiche que les lignes d'historique closes qui possèdent une note ou un commentaire #}
+                    {% if historique.dateFin is not null and (historique.note is not null or historique.commentaire is not null) %}
+                        {% set aDesAvis = true %}
+
+                        <div class="card border-0 shadow-sm bg-light p-3">
+                            <div class="d-flex justify-content-between align-items-start mb-2 flex-wrap gap-2">
+                                <div>
+                                    <strong class="text-dark">{{ historique.user.prenom }}</strong>
+                                    <span class="text-muted small ms-2">le {{ historique.dateFin|date('d/m/Y') }}</span>
+                                </div>
+
+                                {# Étoiles de l'avis #}
+                                {% if historique.note is not null %}
+                                    <span class="text-warning small">
+                                        {% for i in 1..historique.note %}
+                                            <i class="fa-solid fa-star"></i>
+                                        {% endfor %}
+                                        {% if historique.note < 5 %}
+                                            {% for i in (historique.note + 1)..5 %}
+                                                <i class="fa-regular fa-star text-muted opacity-50"></i>
+                                            {% endfor %}
+                                        {% endif %}
+                                    </span>
+                                {% endif %}
+                            </div>
+
+                            <p class="card-text text-secondary mb-0 italic">
+                                {% if historique.commentaire is not empty %}
+                                    " {{ historique.commentaire }} "
+                                </p>
+                                {% else %}
+                                    <span class="text-muted small">L'utilisateur a laissé une note mais aucun commentaire écrit.</span>
+                                {% endif %}
+                        </div>
+                    {% endif %}
+                {% endfor %}
+
+                {# Si l'outil n'a aucun avis enregistré #}
+                {% if not aDesAvis %}
+                    <div class="alert alert-light text-center border py-4 mb-0">
+                        <span class="text-muted">📦 Aucun commentaire n'a encore été laissé pour cet outil. Soyez le premier à donner votre avis après l'avoir emprunté !</span>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
 {% endblock %}

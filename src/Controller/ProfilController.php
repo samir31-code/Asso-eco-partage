@@ -2,6 +2,8 @@
 
 namespace App\Controller;
 
+use App\Repository\HistoriqueRepository;
+use App\Repository\OutilRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -10,18 +12,35 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class ProfilController extends AbstractController
 {
     #[Route('/profil', name: 'app_profil')]
-    #[IsGranted('ROLE_USER')] // Bloque l'accès aux utilisateurs anonymes
-    public function index(): Response
+    #[IsGranted('ROLE_USER')]
+    public function index(HistoriqueRepository $historiqueRepository, OutilRepository $outilRepository): Response
     {
-        // On récupère l'utilisateur connecté
         $user = $this->getUser();
 
-        // Grâce aux relations dans ton entité User.php :
-        // Ses outils prêtés s'obtiennent via $user->getOutils()
-        // Ses emprunts en cours s'obtiennent via $user->getEmprunts()
+        // 1. Emprunts actuellement en cours
+        $empruntsEnCours = $historiqueRepository->findBy([
+            'user' => $user,
+            'dateFin' => null
+        ], ['dateDebut' => 'DESC']);
+
+        // 2. Historique des emprunts terminés
+        $empruntsTermines = $historiqueRepository->findBy([
+            'user' => $user,
+        ], ['dateFin' => 'DESC']);
+
+        $empruntsTermines = array_filter($empruntsTermines, function($h) {
+            return $h->getDateFin() !== null;
+        });
+
+        // 3. ✨ NOUVEAU : Récupérer mes outils mis en ligne
+        $mesOutils = $outilRepository->findBy([
+            'proprietaire' => $user
+        ], ['nom' => 'ASC']);
 
         return $this->render('profil/index.html.twig', [
-            'user' => $user,
+            'empruntsEnCours' => $empruntsEnCours,
+            'empruntsTermines' => $empruntsTermines,
+            'mesOutils' => $mesOutils,
         ]);
     }
 }

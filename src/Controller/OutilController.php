@@ -6,10 +6,12 @@ use App\Entity\Outil;
 use App\Form\AvisType;
 use App\Form\OutilType;
 use App\Entity\Historique;
+use Symfony\Component\Mime\Email;
 use App\Repository\OutilRepository;
 use App\Repository\HistoriqueRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
@@ -96,8 +98,12 @@ class OutilController extends AbstractController
     }
 
     #[Route('/{id}/emprunter', name: 'app_outil_emprunter', methods: ['POST'])]
-    public function emprunter(Request $request, Outil $outil, EntityManagerInterface $entityManager): Response
-    {
+    public function emprunter(
+        Request $request,
+        Outil $outil,
+        EntityManagerInterface $entityManager,
+        MailerInterface $mailer // 👈 Injection du service Mailer
+    ): Response {
         // 🔒 Sécurité 1 : Vérification que l'utilisateur a payé sa cotisation Stripe (ROLE_MEMBRE)
         $this->denyAccessUnlessGranted('ROLE_MEMBRE');
 
@@ -134,7 +140,30 @@ class OutilController extends AbstractController
         $entityManager->persist($historique);
         $entityManager->flush();
 
-        $this->addFlash('success', 'Félicitations ! L\'emprunt a bien été enregistré. Prenez-en soin !');
+        // 📧 Notification 1 : À l'emprunteur
+        $emailEmprunteur = (new Email())
+            ->from('noreply@eco-partage.fr')
+            ->to($userEntity->getEmail())
+            ->subject('Confirmation de votre emprunt - Eco-Partage')
+            ->html("<p>Bonjour <strong>{$userEntity->getPrenom()}</strong>,</p>
+                    <p>Votre emprunt pour l'outil <strong>{$outil->getNom()}</strong> a bien été enregistré !</p>
+                    <p>Prenez-en soin et pensez à le restituer une fois vos travaux terminés.</p>
+                    <p>À bientôt sur Eco-Partage !</p>");
+        $mailer->send($emailEmprunteur);
+
+        // 📧 Notification 2 : Au propriétaire du matériel
+        if ($outil->getProprietaire() && $outil->getProprietaire()->getEmail()) {
+            $emailProprietaire = (new Email())
+                ->from('noreply@eco-partage.fr')
+                ->to($outil->getProprietaire()->getEmail())
+                ->subject('Votre matériel a trouvé preneur ! - Eco-Partage')
+                ->html("<p>Bonjour <strong>{$outil->getProprietaire()->getPrenom()}</strong>,</p>
+                        <p>Bonne nouvelle ! Votre outil <strong>{$outil->getNom()}</strong> vient d'être emprunté par <strong>{$userEntity->getPrenom()} {$userEntity->getNom()}</strong>.</p>
+                        <p>Le système vous informera dès que l'outil sera remis en ligne.</p>");
+            $mailer->send($emailProprietaire);
+        }
+
+        $this->addFlash('success', 'Félicitations ! L\'emprunt a bien été enregistré. Un e-mail de confirmation vous a été envoyé.');
 
         return $this->redirectToRoute('app_profil');
     }
@@ -145,7 +174,8 @@ class OutilController extends AbstractController
         Request $request,
         Outil $outil,
         EntityManagerInterface $entityManager,
-        HistoriqueRepository $historiqueRepository
+        HistoriqueRepository $historiqueRepository,
+        MailerInterface $mailer // 👈 Injection du service Mailer
     ): Response {
         $userConnected = $this->getUser();
 
@@ -176,6 +206,16 @@ class OutilController extends AbstractController
             $outil->setEmprunteur(null);
 
             $entityManager->flush();
+
+            // 📧 Notification 3 : Remerciement & confirmation de restitution
+            $emailRetour = (new Email())
+                ->from('noreply@eco-partage.fr')
+                ->to($userConnected->getEmail())
+                ->subject('Merci pour votre retour de matériel ! - Eco-Partage')
+                ->html("<p>Bonjour <strong>{$userConnected->getPrenom()}</strong>,</p>
+                        <p>L'outil <strong>{$outil->getNom()}</strong> a bien été enregistré comme rendu.</p>
+                        <p>Merci beaucoup d'avoir partagé votre avis et d'aider la communauté à rester de confiance !</p>");
+            $mailer->send($emailRetour);
 
             $this->addFlash('success', 'L\'outil a bien été rendu et votre avis a été enregistré !');
             return $this->redirectToRoute('app_profil');

@@ -1,0 +1,45 @@
+{# templates/outil/_bouton_emprunt.html.twig #}
+
+{% if not is_granted('ROLE_MEMBRE') %}
+	<div class="text-muted small me-2">
+		⚠️ L'emprunt est réservé aux membres ayant réglé leur cotisation annuelle.
+	</div>
+	<a href="{{ path('app_cotisation_paiement') }}" class="btn btn-warning fw-bold px-4 text-dark">
+		💳 Cotiser (15,00 €)
+	</a>
+{% else %}
+
+	{% if not outil.emprunteur and app.user != outil.proprietaire %}
+		<div class="text-success fw-semibold">
+			✅ Cet outil est disponible à l'emprunt.
+		</div>
+		<form action="{{ path('app_outil_emprunter', {'id': outil.id}) }}" method="POST" class="m-0">
+			<input type="hidden" name="_token" value="{{ csrf_token('emprunter' ~ outil.id) }}">
+			<button type="submit" class="btn btn-success px-4">
+				🔑 Emprunter cet outil
+			</button>
+		</form>
+
+	{% elseif outil.emprunteur == app.user %}
+		<div class="text-primary fw-semibold small mb-1">
+			ℹ️ Vous avez actuellement cet outil.
+		</div>
+		<a href="{{ path('app_outil_rendre', {'id': outil.id}) }}" class="btn btn-warning text-dark fw-bold btn-sm w-100">
+			📦 Rendre l'outil
+		</a>
+
+	{% elseif outil.emprunteur %}
+		<div class="text-danger fw-semibold">
+			❌ Indisponible : Emprunté par
+			{{ outil.emprunteur.prenom }}.
+		</div>
+		<button class="btn btn-secondary px-4" disabled>Indisponible</button>
+
+	{% elseif app.user == outil.proprietaire %}
+		<div class="text-muted small">
+			🛠️ C'est votre outil.
+		</div>
+		<button class="btn btn-secondary px-4" disabled>Mon outil</button>
+	{% endif %}
+
+{% endif %}

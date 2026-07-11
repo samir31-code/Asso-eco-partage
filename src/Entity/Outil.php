@@ -3,11 +3,12 @@
 namespace App\Entity;
 
 use App\Entity\User;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
+use App\Entity\Historique;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\DBAL\Types\Types;
 use App\Repository\OutilRepository;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
 
 #[ORM\Entity(repositoryClass: OutilRepository::class)]
 class Outil
@@ -167,5 +168,35 @@ class Outil
         }
 
         return $this;
+    }
+    /**
+     * Calcule la note moyenne de cet outil à partir de son historique
+     */
+    public function getNoteMoyenne(): ?float
+    {
+        $historiques = $this->getHistoriques(); // Récupère tout l'historique de l'outil
+
+        if ($historiques->isEmpty()) {
+            return null; // Pas encore de note pour cet outil
+        }
+
+        $somme = 0;
+        $compteurNotes = 0;
+
+        foreach ($historiques as $historique) {
+            // On ne prend en compte que les historiques qui ont une note
+            if ($historique->getNote() !== null) {
+                $somme += $historique->getNote();
+                $compteurNotes++;
+            }
+        }
+
+        // Si l'outil a été emprunté mais que personne n'a encore laissé de note
+        if ($compteurNotes === 0) {
+            return null;
+        }
+
+        // On calcule la moyenne et on l'arrondit à 1 chiffre après la virgule (ex: 4.3)
+        return round($somme / $compteurNotes, 1);
     }
 }
