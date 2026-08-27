@@ -1,0 +1,35 @@
+{# templates/emails/emprunt_confirmation.html.twig #}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Confirmation de votre emprunt !</title>
+</head>
+<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333333; background-color: #f8f9fa; padding: 20px; margin: 0;">
+    <div style="max-width: 600px; margin: 0 auto; background: #ffffff; padding: 30px; border-radius: 8px; border: 1px solid #e9ecef; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+
+        <div style="text-align: center; border-bottom: 2px solid #198754; padding-bottom: 15px; margin-bottom: 25px;">
+            <h1 style="color: #198754; margin: 0; font-size: 24px;">🛠️ Eco-Partage</h1>
+        </div>
+
+        <h2 style="color: #212529; margin-top: 0;">Bonjour {{ user.prenom }},</h2>
+
+        <p>Votre emprunt a bien été enregistré ! Merci de faire confiance au réseau d'entraide de l'association.</p>
+
+        <div style="background-color: #f1f3f5; padding: 20px; border-radius: 6px; margin: 20px 0; border-left: 4px solid #198754;">
+            <p style="margin: 0 0 10px 0; font-weight: bold; color: #212529;">Outil emprunté : {{ outil.nom }}</p>
+            <p style="margin: 0; color: #198754; font-weight: bold;">📅 À retourner avant le : {{ dateLimite|date('d/m/Y') }}</p>
+        </div>
+
+        <p>Nous vous rappelons que vous vous engagez à prendre soin de ce matériel et à le restituer propre et en bon état à son propriétaire.</p>
+
+        <p>Bon bricolage ou jardinage, et à très bientôt !</p>
+
+        <div style="margin-top: 30px; padding-top: 15px; border-top: 1px solid #e9ecef; text-align: center; color: #6c757d; font-size: 12px;">
+            <p style="margin: 0;">Cet e-mail est automatique, merci de ne pas y répondre.</p>
+            <p style="margin: 5px 0 0 0;">Eco-Partage - Ensemble, partageons nos ressources 🌍</p>
+        </div>
+
+    </div>
+</body>
+</html>

@@ -1,0 +1,95 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Discussion - {{ outil.nom }} - Eco-Partage{% endblock %}
+
+{% block body %}
+<div class="container my-4" style="max-width: 800px;">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <a href="{{ path('app_message_index') }}" class="btn btn-outline-secondary btn-sm mb-2">
+                ← Retour aux discussions
+            </a>
+
+            {# Détermination dynamique de l'interlocuteur pour afficher son statut #}
+            {% set autreUtilisateur = (outil.proprietaire == app.user) ? (messages|first ? (messages|first.expediteur == app.user ? messages|first.destinataire : messages|first.expediteur) : null) : outil.proprietaire %}
+
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+                <h1 class="h4 fw-bold mb-0">💬 Discussion : {{ outil.nom }}</h1>
+
+                {# Indicateur de statut en ligne (< 5 minutes) #}
+                {% if autreUtilisateur and autreUtilisateur.derniereActivite %}
+                    {% set diffMinutes = "now"|date('U') - autreUtilisateur.derniereActivite|date('U') %}
+                    {% if diffMinutes < 300 %}
+                        <span class="badge rounded-pill bg-success text-white" style="font-size: 0.65rem;" title="En ligne">● En ligne</span>
+                    {% else %}
+                        <span class="badge rounded-pill bg-secondary text-white" style="font-size: 0.65rem;" title="Hors ligne">● Hors ligne</span>
+                    {% endif %}
+                {% endif %}
+            </div>
+
+            <small class="text-muted">Propriétaire : {{ outil.proprietaire.prenom }} {{ outil.proprietaire.nom|upper }}</small>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="{{ path('app_outil_show', {'id': outil.id}) }}" class="btn btn-primary btn-sm rounded-pill">
+                Voir l'outil 🛠️
+            </a>
+
+            {# 🗑️ Bouton global pour supprimer toute la conversation #}
+            <form action="{{ path('app_message_supprimer_conversation', {'id': outil.id}) }}" method="post" onsubmit="return confirm('Voulez-vous vraiment supprimer toute la conversation ?');">
+                <button type="submit" class="btn btn-outline-danger btn-sm rounded-pill">
+                    <i class="fa-solid fa-trash-can"></i> Supprimer la discussion
+                </button>
+            </form>
+        </div>
+    </div>
+
+    {# Boîte de chat / Bulles #}
+    <div class="card shadow-sm border-0 mb-3 bg-light rounded-3">
+        <div class="card-body p-4 d-flex flex-column gap-3" style="height: 450px; overflow-y: auto;">
+            {% for message in messages %}
+                {% set isMe = (message.expediteur == app.user) %}
+                <div class="d-flex flex-column {{ isMe ? 'align-items-end' : 'align-items-start' }}">
+
+                    <div class="d-flex align-items-center gap-2 mb-1 px-1">
+                        <div class="small text-muted" style="font-size: 0.75rem;">
+                            {{ isMe ? 'Vous' : message.expediteur.prenom }} • {{ message.dateEnvoi|date('d/m/Y H:i') }}
+
+                            {# 👁️ Indicateur de lecture affiché uniquement pour les messages envoyés par soi-même #}
+                            {% if isMe %}
+                                <span class="ms-1">
+                                    {% if message.lu %}
+                                        <i class="fa-solid fa-check-double text-primary" title="Lu"></i>
+                                    {% else %}
+                                        <i class="fa-solid fa-check text-muted" title="Envoyé (non lu)"></i>
+                                    {% endif %}
+                                </span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="p-3 rounded-4 shadow-sm {{ isMe ? 'bg-primary text-white' : 'bg-white text-dark border' }}" style="max-width: 75%; word-break: break-word;">
+                        {{ message.contenu|nl2br }}
+                    </div>
+                </div>
+            {% else %}
+                <div class="text-center text-muted my-auto">
+                    <p class="mb-1">Démarrez la conversation pour organiser la remise en main propre !</p>
+                    <small>Proposez un lieu et un horaire (ex: Samedi matin devant la mairie).</small>
+                </div>
+            {% endfor %}
+        </div>
+
+        {# Formulaire de réponse rapide en bas du chat #}
+        <div class="card-footer bg-white border-top p-3 rounded-bottom-3">
+            <form action="{{ path('app_message_envoyer', {'id': outil.id}) }}" method="post" class="d-flex gap-2">
+                <input type="text" name="contenu" class="form-control rounded-pill px-3" placeholder="Écrivez votre message pour organiser la remise..." required autocomplete="off">
+                <button type="submit" class="btn btn-primary rounded-pill px-4 fw-bold">
+                    <i class="fa-solid fa-paper-plane"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

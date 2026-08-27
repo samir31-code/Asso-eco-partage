@@ -1,0 +1,64 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nous contacter - Eco-Partage{% endblock %}
+
+{% block body %}
+<div class="py-5" style="background-color: #f2f7f4; min-height: 85vh;">
+    <div class="container" style="max-width: 800px;">
+        
+        <!-- Messages Flash de succès -->
+        {% for message in app.flashes('success') %}
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+
+        <h1 class="display-5 fw-bold mb-3" style="color: #1b3b2b;">Nous contacter</h1>
+        
+        <p class="text-muted mb-4 small" style="line-height: 1.6;">
+            Du lundi au vendredi : 9h-12h30 / 14h-17h30... Service clients (abonnements, commandes) : <strong>05 61 00 00 00</strong>. Pour toutes questions techniques ou relatives au prêt d'outils, merci de faire votre demande via ce formulaire de contact, la rédaction vous apportera une réponse.
+        </p>
+
+        <div class="bg-white p-4 p-md-5 rounded-3 shadow-sm border">
+            {{ form_start(contactForm, {'attr': {'novalidate': 'novalidate'}}) }}
+                
+                <div class="mb-3">
+                    {{ form_row(contactForm.subject) }}
+                </div>
+
+                <div class="mb-3">
+                    {{ form_row(contactForm.accountNumber) }}
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6 mb-3 mb-md-0">
+                        {{ form_row(contactForm.fullName) }}
+                    </div>
+                    <div class="col-md-6">
+                        {{ form_row(contactForm.email) }}
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    {{ form_row(contactForm.message) }}
+                </div>
+
+                <div class="mb-4 form-check">
+                    {{ form_widget(contactForm.consent, {'attr': {'class': 'form-check-input'}}) }}
+                    {{ form_label(contactForm.consent, null, {'label_attr': {'class': 'form-check-label small text-muted'}}) }}
+                    {{ form_errors(contactForm.consent) }}
+                </div>
+
+                <!-- Bouton d'envoi aux couleurs du modèle -->
+                <div>
+                    <button type="submit" class="btn text-white px-4 py-2 fw-bold" style="background-color: #b54512; border-color: #b54512;">
+                        Envoyer
+                    </button>
+                </div>
+
+            {{ form_end(contactForm) }}
+        </div>
+    </div>
+</div>
+{% endblock %}

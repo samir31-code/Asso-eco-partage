@@ -1,21 +1,104 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Register{% endblock %}
+{% block title %}Inscription - Eco-Partage{% endblock %}
 
 {% block body %}
-    <h1>Register</h1>
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-7 col-md-9 bg-white p-4 rounded shadow-sm border">
+            <h2 class="mb-4 text-center fw-bold text-dark">Créer mon compte</h2>
 
-    {{ form_errors(registrationForm) }}
+            {{ form_start(registrationForm) }}
 
-    {{ form_start(registrationForm) }}
-        {{ form_row(registrationForm.email) }}
-        {{ form_row(registrationForm.prenom) }}
-        {{ form_row(registrationForm.nom) }}
-        {{ form_row(registrationForm.plainPassword, {
-            label: 'Password'
-        }) }}
-        {{ form_row(registrationForm.agreeTerms) }}
+                {# SECTION 1 : CONNEXION #}
+                <div class="mb-3">
+                    {{ form_label(registrationForm.email, null, {'label_attr': {'class': 'form-label fw-bold'}}) }}
+                    {{ form_widget(registrationForm.email) }}
+                    {{ form_errors(registrationForm.email) }}
+                </div>
 
-        <button type="submit" class="btn">Register</button>
-    {{ form_end(registrationForm) }}
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        {{ form_label(registrationForm.plainPassword.first, null, {'label_attr': {'class': 'form-label fw-bold'}}) }}
+                        {{ form_widget(registrationForm.plainPassword.first) }}
+                        {{ form_errors(registrationForm.plainPassword.first) }}
+                    </div>
+                    <div class="col-md-6">
+                        {{ form_label(registrationForm.plainPassword.second, null, {'label_attr': {'class': 'form-label fw-bold'}}) }}
+                        {{ form_widget(registrationForm.plainPassword.second) }}
+                        {{ form_errors(registrationForm.plainPassword.second) }}
+                    </div>
+                </div>
+
+                <hr class="my-4">
+
+                {# SECTION 2 : INFORMATIONS PERSONNELLES #}
+                <h4 class="mb-3 fw-bold text-secondary">Vos informations personnelles</h4>
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        {{ form_label(registrationForm.nom, null, {'label_attr': {'class': 'form-label fw-bold'}}) }}
+                        {{ form_widget(registrationForm.nom) }}
+                        {{ form_errors(registrationForm.nom) }}
+                    </div>
+                    <div class="col-md-6">
+                        {{ form_label(registrationForm.prenom, null, {'label_attr': {'class': 'form-label fw-bold'}}) }}
+                        {{ form_widget(registrationForm.prenom) }}
+                        {{ form_errors(registrationForm.prenom) }}
+                    </div>
+                </div>
+                <div class="mb-4">
+                    {{ form_label(registrationForm.telephone, null, {'label_attr': {'class': 'form-label fw-bold'}}) }}
+                    {{ form_widget(registrationForm.telephone) }}
+                    {{ form_errors(registrationForm.telephone) }}
+                </div>
+
+                <hr class="my-4">
+
+                {# SECTION 3 : ADRESSE #}
+                <h4 class="mb-3 fw-bold text-secondary">Votre adresse de facturation</h4>
+                <div class="mb-3">
+                    {{ form_label(registrationForm.adresse, null, {'label_attr': {'class': 'form-label fw-bold'}}) }}
+                    {{ form_widget(registrationForm.adresse) }}
+                    {{ form_errors(registrationForm.adresse) }}
+                </div>
+                <div class="mb-3">
+                    {{ form_label(registrationForm.complementAdresse, null, {'label_attr': {'class': 'form-label fw-bold'}}) }}
+                    {{ form_widget(registrationForm.complementAdresse) }}
+                    {{ form_errors(registrationForm.complementAdresse) }}
+                </div>
+                <div class="row g-3 mb-3">
+                    <div class="col-md-4">
+                        {{ form_label(registrationForm.codePostal, null, {'label_attr': {'class': 'form-label fw-bold'}}) }}
+                        {{ form_widget(registrationForm.codePostal) }}
+                        {{ form_errors(registrationForm.codePostal) }}
+                    </div>
+                    <div class="col-md-8">
+                        {{ form_label(registrationForm.ville, null, {'label_attr': {'class': 'form-label fw-bold'}}) }}
+                        {{ form_widget(registrationForm.ville) }}
+                        {{ form_errors(registrationForm.ville) }}
+                    </div>
+                </div>
+                <div class="mb-4">
+                    {{ form_label(registrationForm.pays, null, {'label_attr': {'class': 'form-label fw-bold'}}) }}
+                    {{ form_widget(registrationForm.pays) }}
+                    {{ form_errors(registrationForm.pays) }}
+                </div>
+
+                <hr class="my-4">
+
+                {# SECTION 4 : SÉCURITÉ / ACCORD #}
+                <div class="form-check mb-4">
+                    {{ form_widget(registrationForm.agreeTerms) }}
+                    {{ form_label(registrationForm.agreeTerms, null, {'label_attr': {'class': 'form-check-label'}}) }}
+                    {{ form_errors(registrationForm.agreeTerms) }}
+                </div>
+
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-warning btn-lg py-3 fw-bold text-dark">Créer mon compte</button>
+                </div>
+
+            {{ form_end(registrationForm) }}
+        </div>
+    </div>
+</div>
 {% endblock %}

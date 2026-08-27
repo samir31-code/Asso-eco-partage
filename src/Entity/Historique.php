@@ -43,6 +43,12 @@ class Historique
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $commentaire = null;
 
+    #[ORM\Column(length: 50, options: ['default' => 'en_attente'])]
+    private ?string $statut = 'en_attente';
+
+    #[ORM\Column(type: 'datetime', nullable: true)]
+    private ?\DateTimeInterface $dateRetourPrevu = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -117,6 +123,29 @@ class Historique
     {
         $this->commentaire = $commentaire;
 
+        return $this;
+    }
+
+    public function getStatut(): ?string
+    {
+        return $this->statut ?? 'en_attente'; // ou return $this->statut;
+    }
+
+    public function setStatut(string $statut): static
+    {
+        $this->statut = $statut;
+
+        return $this;
+    }
+
+    public function getDateRetourPrevu(): ?\DateTimeInterface
+    {
+        return $this->dateRetourPrevu;
+    }
+
+    public function setDateRetourPrevu(?\DateTimeInterface $dateRetourPrevu): static
+    {
+        $this->dateRetourPrevu = $dateRetourPrevu;
         return $this;
     }
 }

@@ -1,0 +1,82 @@
+{# templates/_footer.html.twig #}
+<footer class="bg-white text-dark pt-5 pb-3 mt-auto border-top">
+    <div class="container">
+        <div class="row g-4 mb-5">
+
+            {# 🧭 Colonne 1 : Accès rapide #}
+            <div class="col-12 col-md-4">
+                <h3 class="h6 fw-bold text-uppercase mb-3 tracking-wider">Accès rapide</h3>
+                <ul class="list-unstyled small text-muted">
+                    <li class="mb-2">
+                        <a href="{{ path('app_outil_index') }}" class="text-decoration-none text-secondary hover-dark">Catalogue des outils</a>
+                    </li>
+                    <li class="mb-2">
+                        <a href="{{ path('app_qui_sommes_nous') }}" class="text-decoration-none text-secondary hover-dark">Qui sommes-nous ?</a>
+                    </li>
+                    <li class="mb-2">
+                        <a href="{{ path('app_contact') }}" class="text-decoration-none text-secondary hover-dark">Contact</a>
+                    </li>
+                </ul>
+            </div>
+
+            {# 🛠️ Colonne 2 : Catégories d'outils #}
+            <div class="col-6 col-md-4">
+                <h4 class="h6 fw-bold text-uppercase mb-3 tracking-wider">Catégories</h4>
+                <ul class="list-unstyled small text-muted">
+                    <li class="mb-2"><a href="{{ path('app_outil_index', {categorie: 'Bricolage'}) }}" class="text-decoration-none text-secondary hover-dark">Bricolage</a></li>
+                    <li class="mb-2"><a href="{{ path('app_outil_index', {categorie: 'Jardinage'}) }}" class="text-decoration-none text-secondary hover-dark">Jardinage</a></li>
+                    <li class="mb-2"><a href="{{ path('app_outil_index', {categorie: 'Électricité'}) }}" class="text-decoration-none text-secondary hover-dark">Électricité</a></li>
+                    <li class="mb-2"><a href="{{ path('app_outil_index', {categorie: 'Nettoyage & Entretien'}) }}" class="text-decoration-none text-secondary hover-dark">Nettoyage & Entretien</a></li>
+                    <li class="mb-2"><a href="{{ path('app_outil_index', {categorie: 'Cuisine Festive & Conviviale'}) }}" class="text-decoration-none text-secondary hover-dark">Cuisine Festive & Conviviale</a></li>
+                    <li class="mb-2"><a href="{{ path('app_outil_index', {categorie: 'Fête & Événements'}) }}" class="text-decoration-none text-secondary hover-dark">Fête & Événements</a></li>
+                    <li class="mb-2"><a href="{{ path('app_outil_index', {categorie: 'Voyage & Plein air'}) }}" class="text-decoration-none text-secondary hover-dark">Voyage & Plein air</a></li>
+                    <li class="mb-2"><a href="{{ path('app_outil_index', {categorie: 'Loisirs Créatifs & Couture'}) }}" class="text-decoration-none text-secondary hover-dark">Loisirs Créatifs & Couture</a></li>
+                    <li class="mb-2"><a href="{{ path('app_outil_index', {categorie: 'Mécanique & Auto'}) }}" class="text-decoration-none text-secondary hover-dark">Mécanique & Auto</a></li>
+                    <li class="mb-2"><a href="{{ path('app_outil_index', {categorie: 'Numérique & Bureautique'}) }}" class="text-decoration-none text-secondary hover-dark">Numérique & Bureautique</a></li>
+                </ul>
+            </div>
+
+            {# 👤 Colonne 3 : Compte / Abonnement #}
+            <div class="col-6 col-md-4">
+                <h4 class="h6 fw-bold text-uppercase mb-3 tracking-wider">Mon Compte</h4>
+                <ul class="list-unstyled small text-muted">
+                    {% if app.user %}
+                        <li class="mb-2">
+                            <a href="{{ path('app_profil') }}" class="text-decoration-none text-secondary hover-dark">Mon profil</a>
+                        </li>
+                        <li class="mb-2">
+                            <a href="{{ path('app_outil_new') }}" class="text-decoration-none text-secondary hover-dark">Proposer un outil</a>
+                        </li>
+                    {% else %}
+                        <li class="mb-2">
+                            <a href="{{ path('app_login') }}" class="text-decoration-none text-secondary hover-dark">Se connecter</a>
+                        </li>
+                        <li class="mb-2">
+                            <a href="{{ path('app_register') }}" class="text-decoration-none text-secondary hover-dark">Créer un compte</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+
+        {# ⚖️ Ligne de bas de page (Légal & Copyright) #}
+        <div class="border-top pt-4 d-flex flex-column flex-md-row justify-content-between align-items-center small text-muted">
+            <div class="d-flex gap-3 mb-3 mb-md-0">
+                <a href="{{ path('app_cgv') }}" class="text-decoration-none text-muted hover-dark">CGV</a>
+                <a href="{{ path('app_mentions_legales') }}" class="text-decoration-none text-muted hover-dark">Mentions légales</a>
+                <a href="{{ path('app_confidentialite') }}" class="text-decoration-none text-muted hover-dark">Confidentialité</a>
+            </div>
+            <p class="mb-0">&copy; Eco-Partage {{ "now"|date("Y") }} - Tous droits réservés</p>
+        </div>
+    </div>
+</footer>
+
+<style>
+    .hover-dark:hover {
+        color: #000000 !important;
+        text-decoration: underline !important;
+    }
+    .tracking-wider {
+        letter-spacing: 0.05em;
+    }
+</style>

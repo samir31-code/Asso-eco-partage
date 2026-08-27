@@ -1,0 +1,19 @@
+framework:
+    rate_limiter:
+        # 1. Limiteur pour la connexion : max 5 tentatives par minute par IP
+        login:
+            policy: 'fixed_window'
+            limit: 5
+            interval: '1 minute'
+
+        # 2. Limiteur pour l'inscription : max 3 créations par heure par IP (anti-spam de comptes)
+        register:
+            policy: 'fixed_window'
+            limit: 3
+            interval: '1 hour'
+
+        # 3. Limiteur pour le formulaire de contact : max 5 messages par 15 minutes par IP
+        contact:
+            policy: 'fixed_window'
+            limit: 5
+            interval: '15 minutes'

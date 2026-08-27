@@ -1,156 +1,440 @@
+{# templates/outil/index.html.twig #}
 {% extends 'base.html.twig' %}
 
 {% block title %}Catalogue des Outils - Eco-Partage
 {% endblock %}
 
 {% block body %}
+	{# 🎨 Couleur par défaut à `#38bdf8` pour "Tout voir", et couleurs du diagramme pour les autres catégories #}
+	{% set bgColor = 'skyblue' %}
 
-	{% if app.user %}
-		<div class="alert alert-success shadow-sm mb-4" role="alert">
-			💡 Ravie de vous revoir,
-			<strong>{{ app.user.prenom }}</strong>
-			! 👋
-		</div>
-	{% else %}
-		<div class="alert alert-primary shadow-sm mb-4" role="alert">
-			👋
-			<strong>Bienvenue sur Eco-Partage !</strong>
-			Connectez-vous pour commencer à ajouter ou emprunter des outils.
-		</div>
-	{% endif %}
-
-	<div class="d-flex justify-content-between align-items-center mb-4">
-		<h1 class="h2 text-dark m-0">📦 Catalogue des outils</h1>
-		<a href="{{ path('app_outil_new') }}" class="btn btn-primary">➕ Ajouter un outil</a>
-	</div>
-
-	{# 🧭 Barre de Filtres Express #}
-	<div class="bg-light p-3 rounded shadow-sm mb-4 d-flex align-items-center gap-2 flex-wrap">
-		<span class="fw-bold text-secondary me-2">📁 Filtrer par :</span>
-		<button class="btn btn-sm btn-dark px-3 rounded-pill filter-btn" data-category="all">Tout voir</button>
-
-		{# Extraction dynamique des catégories présentes dans ta liste #}
-		{% set categories = [] %}
-		{% for o in outils %}
-			{% if o.categorie not in categories %}
-				{% set categories = categories | merge([o.categorie]) %}
+	{% if current_categorie is defined and current_categorie != 'all' and current_categorie is not empty %}
+		{% for cat in categories %}
+			{% if cat.id == current_categorie %}
+				{% set catName = cat.nom|lower %}
+				{% if 'bricolage' in catName %}
+					{% set bgColor = '#3366cc' %}
+				{% elseif 'jardinage' in catName %}
+					{% set bgColor = '#109618' %}
+				{% elseif 'électricité' in catName or 'electricite' in catName %}
+					{% set bgColor = '#ff9900' %}
+				{% elseif 'nettoyage' in catName %}
+					{% set bgColor = '#dc3912' %}
+				{% elseif 'cuisine' in catName %}
+					{% set bgColor = '#7e57c2' %}
+				{% elseif 'fête' in catName or 'fete' in catName %}
+					{% set bgColor = '#ec407a' %}
+				{% elseif 'voyage' in catName %}
+					{% set bgColor = '#00acc1' %}
+				{% elseif 'loisirs' in catName %}
+					{% set bgColor = '#00897b' %}
+				{% elseif 'mécanique' in catName or 'mecanique' in catName %}
+					{% set bgColor = '#f97316' %}
+				{% elseif 'numérique' in catName or 'numerique' in catName %}
+					{% set bgColor = '#5c6bc0' %}
+				{% elseif cat.couleur is defined and cat.couleur %}
+					{% set bgColor = cat.couleur %}
+				{% endif %}
 			{% endif %}
 		{% endfor %}
+	{% endif %}
 
-		{% for cat in categories %}
-			<button class="btn btn-sm btn-outline-dark px-3 rounded-pill filter-btn" data-category="{{ cat|lower|replace({' ': '-'}) }}">{{ cat }}</button>
-		{% endfor %}
-	</div>
+	{# 🌍 Application de la couleur sur TOUT l'arrière-plan de la page #}
+	<div class="w-100 min-vh-100 py-4" style="background-color: {{ bgColor }}; transition: background-color 0.4s ease; margin-top: -1.5rem; margin-bottom: -3rem;">
+		<div
+			class="container py-4">
 
-	{# 📦 Grille de cartes Bootstrap #}
-	<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-		{% for outil in outils %}
-			<div class="col outil-card" data-cat="{{ outil.categorie|lower|replace({' ': '-'}) }}">
-				<div
-					class="card h-100 shadow-sm border-0 bg-white position-relative">
-
-					{# Badge de Statut #}
-					<div class="position-absolute top-0 end-0 m-3">
-						{% if outil.emprunteur %}
-							<span class="badge bg-danger shadow">❌ Emprunté</span>
-						{% else %}
-							<span class="badge bg-success shadow">✅ Disponible</span>
-						{% endif %}
-					</div>
-
-					{# Image de l'outil #}
-					{% if outil.image %}
-						<img src="{{ outil.image }}" class="card-img-top" alt="{{ outil.nom }}" style="height: 200px; object-fit: cover;">
-					{% else %}
-						<div class="bg-light text-muted d-flex align-items-center justify-content-center card-img-top" style="height: 200px;">
-							<span class="small">Pas d'image disponible</span>
-						</div>
-					{% endif %}
-
-					{# Corps de la carte #}
-					<div class="card-body d-flex flex-column">
-						<span class="badge bg-secondary mb-2 align-self-start">{{ outil.categorie }}</span>
-						<h5 class="card-title text-dark fw-bold mb-2">{{ outil.nom }}</h5>
-
-						{# ⭐ Affichage de la note moyenne #}
-						<div class="mb-3 small">
-							{% if outil.noteMoyenne is not null %}
-								<span
-									class="text-warning">
-									{# Étoiles pleines pour la version 6 #}
-									{% for i in 1..outil.noteMoyenne|round(0, 'floor') %}
-										<i class="fa-solid fa-star"></i>
-									{% endfor %}
-
-									{# Demi-étoile pour la version 6 #}
-									{% if (outil.noteMoyenne - outil.noteMoyenne|round(0, 'floor')) >= 0.5 %}
-										<i class="fa-solid fa-star-half-stroke"></i>
-									{% endif %}
-								</span>
-								<strong class="text-dark ms-1">{{ outil.noteMoyenne }}</strong>
-								<span class="text-muted">/ 5</span>
+			{# 📯 Alertes de bienvenue #}
+			{% if app.user %}
+				<div class="alert alert-success border-0 shadow-sm mb-4 d-flex align-items-center gap-2" role="alert">
+					<span aria-hidden="true">💡</span>
+					<span>Ravie de vous revoir,
+						<strong>
+							{% if 'ROLE_JURY' in app.user.roles %}
+								Jury
 							{% else %}
-								<span class="text-muted italic small">
-									<i class="fa-regular fa-star me-1"></i>Aucune note</span>
+								{{ app.user.prenom }}
 							{% endif %}
+						</strong>
+						! 👋</span>
+				</div>
+			{% else %}
+				<div class="alert alert-primary border-0 shadow-sm mb-4" role="alert">
+					<span aria-hidden="true">👋</span>
+					<strong>Bienvenue sur Eco-Partage !</strong>
+					Connectez-vous pour commencer à ajouter ou emprunter des outils.
+				</div>
+			{% endif %}
+
+			{# 🏗️ En-tête du catalogue #}
+			<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+				<h1 class="h2 text-dark m-0 fw-bold">📦 Catalogue des outils</h1>
+				<a href="{{ path('app_outil_new') }}" class="btn btn-light shadow-sm fw-bold px-4 rounded-pill text-dark">
+					➕ Ajouter un outil
+				</a>
+			</div>
+
+			{# 🛠️ BARRE DE RECHERCHE & FILTRES UNIFIÉS (Accessibilité renforcée) #}
+			<div class="bg-white p-3 rounded-3 shadow-sm mb-4 border">
+				<form method="get" action="{{ path('app_outil_index') }}" id="searchForm" role="search" aria-label="Filtres du catalogue d'outils">
+					<div
+						class="row g-3 align-items-center">
+
+						{# 🔍 1. Recherche textuelle globale #}
+						<div class="col-12 col-md-4">
+							<label for="inputRecherche" class="form-label visually-hidden">Rechercher un outil</label>
+							<div class="input-group">
+								<span class="input-group-text bg-light border-end-0 text-muted" id="search-addon">
+									<i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+								</span>
+								<input type="text" name="q" id="inputRecherche" value="{{ current_recherche ?? '' }}" class="form-control border-start-0 ps-0" placeholder="Rechercher un outil..." autocomplete="off" aria-describedby="search-addon">
+							</div>
 						</div>
 
-						<p class="card-text text-muted small flex-grow-1">
-							{{ outil.description|slice(0, 100) }}{{ outil.description|length > 100 ? '...' : '' }}
-						</p>
-
-						{# 🎯 SECTION MODIFIÉE : Intégration du module d'emprunt #}
-						<div class="border-top pt-3 mt-3">
-							<div class="d-flex justify-content-between align-items-center mb-3">
-								<span class="text-muted small">👤 Par
-									{{ outil.proprietaire.prenom }}</span>
-								<a href="{{ path('app_outil_show', {'id': outil.id}) }}" class="btn btn-info btn-sm text-white fw-bold px-3">
-									Voir détails
-								</a>
+						{# 📁 2. Sélection Catégorie #}
+						<div class="col-12 col-sm-6 col-md-4">
+							<div class="d-flex align-items-center gap-2">
+								<label for="selectCategorie" class="fw-bold text-secondary text-nowrap small mb-0">📁 Catégorie :</label>
+								<select name="categorie" id="selectCategorie" class="form-select rounded-pill shadow-sm">
+									<option value="all" {% if current_categorie is not defined or current_categorie == 'all' %} selected {% endif %}>Tout voir</option>
+									{% for cat in categories %}
+										<option value="{{ cat.id }}" {% if current_categorie is defined and current_categorie == cat.id %} selected {% endif %}>
+											{{ cat.nom }}
+										</option>
+									{% endfor %}
+								</select>
 							</div>
+						</div>
 
-							{# 🔒 Inclusion de notre fragment de code réutilisable #}
-							<div class="p-2 bg-light rounded d-flex justify-content-center align-items-center text-center">
-								{{ include('outil/_bouton_emprunt.html.twig', {'outil': outil}) }}
+						{# ⚡ 3. Sélection État #}
+						<div class="col-12 col-sm-6 col-md-4">
+							<div class="d-flex align-items-center gap-2">
+								<label for="selectEtat" class="fw-bold text-secondary text-nowrap small mb-0">⚡ État :</label>
+								<select name="etat" id="selectEtat" class="form-select rounded-pill shadow-sm">
+									<option value="all" {% if current_etat is not defined or current_etat == 'all' %} selected {% endif %}>Tous les états</option>
+									<option value="disponible" {% if current_etat is defined and current_etat == 'disponible' %} selected {% endif %}>🟢 Disponible</option>
+									<option value="emprunte" {% if current_etat is defined and current_etat == 'emprunte' %} selected {% endif %}>🔴 Emprunté</option>
+								</select>
+							</div>
+						</div>
+
+						{# 📍 4. Sélection Proximité / Ville #}
+						<div class="col-12 col-sm-6 col-md-4">
+							<div class="d-flex align-items-center gap-2">
+								<label for="filtre-ville" class="fw-bold text-secondary text-nowrap small mb-0">📍 Ville :</label>
+								<input type="text" id="filtre-ville" name="ville" value="{{ current_ville ?? '' }}" class="form-control rounded-pill shadow-sm" placeholder="Ex: Toulouse" autocomplete="off">
 							</div>
 						</div>
 
 					</div>
+				</form>
+			</div>
+
+			{# 🔄 Zone de résultats dynamique avec aria-live pour les lecteurs d'écran #}
+			<div
+				id="resultatsRecherche" aria-live="polite" aria-atomic="false">
+				{# 📦 Grille de cartes Bootstrap #}
+				<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" id="grilleOutils">
+					{% for outil in outils %}
+						<div class="col">
+							<div
+								class="card h-100 shadow-sm border-0 bg-white position-relative transition-hover overflow-hidden rounded-3">
+
+								{# 🏷️ Badge de Statut #}
+								<div class="position-absolute top-0 end-0 m-3 z-3">
+									{% if outil.emprunteur %}
+										<span class="badge bg-danger shadow-sm px-2.5 py-1.5 rounded-pill fw-bold" aria-label="Statut : Emprunté">🔴 Emprunté</span>
+									{% else %}
+										<span class="badge bg-success shadow-sm px-2.5 py-1.5 rounded-pill fw-bold" aria-label="Statut : Disponible">🟢 Disponible</span>
+									{% endif %}
+								</div>
+
+								{# 🖼️ Image de l'outil #}
+								<div class="bg-light border-bottom d-flex align-items-center justify-content-center overflow-hidden" style="height: 200px;">
+									{% if outil.photos is not empty %}
+										<img src="{{ asset('uploads/outils/' ~ outil.photos|first.nom) }}" class="img-fluid h-100 p-2 object-contain" alt="Photo de l'outil {{ outil.nom }}">
+									{% elseif outil.image %}
+										<img src="{{ asset('uploads/outils/' ~ outil.image) }}" class="img-fluid h-100 p-2 object-contain" alt="Photo de l'outil {{ outil.nom }}">
+									{% else %}
+										<div class="text-muted text-center" aria-hidden="true">
+											<i class="fas fa-tools fs-2 mb-2 opacity-50"></i>
+											<br><span class="small italic">Pas d'image</span>
+										</div>
+									{% endif %}
+								</div>
+
+								{# 📄 Corps de la carte #}
+								<div class="card-body d-flex flex-column p-4">
+									{% if outil.categorie %}
+										{% set cName = outil.categorie.nom|lower %}
+										{% set badgeColor = '#6c757d' %}
+										{% if 'bricolage' in cName %}
+											{% set badgeColor = '#3366cc' %}
+										{% elseif 'jardinage' in cName %}
+											{% set badgeColor = '#109618' %}
+										{% elseif 'électricité' in cName or 'electricite' in cName %}
+											{% set badgeColor = '#ff9900' %}
+										{% elseif 'nettoyage' in cName %}
+											{% set badgeColor = '#dc3912' %}
+										{% elseif 'cuisine' in cName %}
+											{% set badgeColor = '#7e57c2' %}
+										{% elseif 'fête' in cName or 'fete' in cName %}
+											{% set badgeColor = '#ec407a' %}
+										{% elseif 'voyage' in cName %}
+											{% set badgeColor = '#00acc1' %}
+										{% elseif 'loisirs' in cName %}
+											{% set badgeColor = '#00897b' %}
+										{% elseif 'mécanique' in cName or 'mecanique' in cName %}
+											{% set badgeColor = '#f97316' %}
+										{% elseif 'numérique' in cName or 'numerique' in cName %}
+											{% set badgeColor = '#5c6bc0' %}
+										{% elseif outil.categorie.couleur is defined and outil.categorie.couleur %}
+											{% set badgeColor = outil.categorie.couleur %}
+										{% endif %}
+
+										<span class="badge mb-2 align-self-start shadow-sm text-white" style="background-color: {{ badgeColor }};">
+											{{ outil.categorie.nom }}
+										</span>
+									{% else %}
+										<span class="badge bg-light text-muted border mb-2 align-self-start">Sans catégorie</span>
+									{% endif %}
+
+									<h2 class="card-title h5 text-dark fw-bold mb-2">{{ outil.nom }}</h2>
+
+									{# ⭐ Note moyenne #}
+									<div class="mb-3 small d-flex align-items-center">
+										{% if outil.noteMoyenne is not null %}
+											<span class="text-warning me-1" aria-label="Noté {{ outil.noteMoyenne }} sur 5">
+												{% for i in 1..outil.noteMoyenne|round(0, 'floor') %}
+													<i class="fa-solid fa-star" aria-hidden="true"></i>
+												{% endfor %}
+												{% if (outil.noteMoyenne - outil.noteMoyenne|round(0, 'floor')) >= 0.5 %}
+													<i class="fa-solid fa-star-half-stroke" aria-hidden="true"></i>
+												{% endif %}
+											</span>
+											<strong class="text-dark ms-1">{{ outil.noteMoyenne }}</strong>
+											<span class="text-muted ms-1">/ 5</span>
+										{% else %}
+											<span class="text-muted small">
+												<i class="fa-regular fa-star me-1" aria-hidden="true"></i>Aucune note
+											</span>
+										{% endif %}
+									</div>
+
+									{# Description #}
+									<p class="card-text text-muted small flex-grow-1">
+										{{ outil.description|slice(0, 100) }}{{ outil.description|length > 100 ? '...' : '' }}
+									</p>
+
+									{# ⚙️ Module d'emprunt #}
+									<div class="border-top pt-3 mt-3">
+										<div class="d-flex justify-content-between align-items-center mb-3">
+											<span class="text-muted small">
+												<i class="fa fa-user opacity-70" aria-hidden="true"></i>
+												Propriétaire :
+												{{ outil.proprietaire.prenom }}
+											</span>
+											<a href="{{ path('app_outil_show', {'id': outil.id}) }}" class="btn btn-info btn-sm text-white fw-bold px-3 rounded-pill shadow-sm">
+												Voir détails
+												<span class="visually-hidden">de l'outil
+													{{ outil.nom }}</span>
+											</a>
+										</div>
+
+										<div class="p-2 bg-light rounded-3 d-flex justify-content-center align-items-center text-center border">
+											{{ include('outil/_bouton_emprunt.html.twig', {'outil': outil}) }}
+										</div>
+									</div>
+
+								</div>
+							</div>
+						</div>
+					{% else %}
+						{# 🌟 État vide soigné (Empty State) pour le catalogue #}
+						<div class="col-12">
+							<div class="text-center py-5 px-4 bg-white rounded-4 shadow-sm border-0 my-3">
+								<div class="mb-3" aria-hidden="true">
+									<i class="fa-solid fa-toolbox text-muted display-4"></i>
+								</div>
+								<h3 class="fw-bold text-dark mb-2">Aucun outil ne correspond à votre recherche</h3>
+								<p class="text-muted mb-4" style="max-width: 450px; margin: 0 auto;">
+									Essayez de modifier vos filtres ou de chercher un autre terme, ou soyez le premier à partager un outil !
+								</p>
+								{% if app.user %}
+									<a href="{{ path('app_outil_new') }}" class="btn btn-primary rounded-pill px-4 fw-bold">
+										<i class="fa-solid fa-plus me-2" aria-hidden="true"></i>
+										Publier un outil
+									</a>
+								{% else %}
+									<a href="{{ path('app_login') }}" class="btn btn-primary rounded-pill px-4 fw-bold">
+										<i class="fa-solid fa-right-to-bracket me-2" aria-hidden="true"></i>
+										Connectez-vous pour publier
+									</a>
+								{% endif %}
+							</div>
+						</div>
+					{% endfor %}
+				</div>
+
+				{# 📄 BLOC DE PAGINATION PROPRE ET BIEN VISIBLE #}
+				<div class="d-flex justify-content-center mt-5">
+					<div class="pagination-container bg-white p-3 rounded-pill shadow-sm border" aria-label="Pagination du catalogue">
+						{{ knp_pagination_render(outils) }}
+					</div>
 				</div>
 			</div>
-		{% else %}
-			<div class="col-12">
-				<div class="alert alert-muted bg-light text-center py-5 shadow-sm">
-					📦 Aucun outil disponible dans le catalogue pour le moment.
-				</div>
-			</div>
-		{% endfor %}
+
+		</div>
 	</div>
 
+	<style>
+		.transition-hover {
+			transition: transform 0.25s ease, box-shadow 0.25s ease;
+		}
+		.transition-hover:hover {
+			transform: translateY(-5px);
+			box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.1) !important;
+		}
+		.object-contain {
+			object-fit: contain;
+		}
+		.pagination-container .pagination {
+			margin-bottom: 0;
+			gap: 5px;
+		}
+		.pagination-container .page-item .page-link {
+			border: none;
+			border-radius: 50rem;
+			padding: 8px 16px;
+			color: #495057;
+			font-weight: 600;
+			transition: all 0.2s ease;
+		}
+		.pagination-container .page-item.active .page-link {
+			background-color: #0d6efd;
+			color: white;
+			box-shadow: 0 4px 10px rgba(13, 110, 253, 0.3);
+		}
+		.pagination-container .page-link:hover {
+			background-color: #e9ecef;
+			color: #0d6efd;
+		}
+
+		/* 📱 RESPONSIVE MOBILE & CIBLAGE TACTILE */
+		@media(max-width: 768px) {
+			/* Agrandir la zone tactile des liens de pagination (minimum 44x44px recommandé) */
+			.pagination-container .page-item .page-link {
+				padding: 10px 14px;
+				font-size: 0.9rem;
+			}
+
+			/* Espacement vertical accru entre les blocs de filtres empilés sur mobile */
+			#searchForm .row > div {
+				margin-bottom: 0.5rem;
+			}
+
+			/* Forcer les boutons d'action et badges à avoir une hauteur confortable pour le pouce */
+			.card .btn,
+			.card select,
+			.card input {
+				min-height: 44px;
+			}
+		}
+
+		/* Amélioration générale du confort tactile sur tous les écrans tactiles */
+		@media(pointer: coarse) {
+			select.form-select,
+			.btn,
+			.form-control {
+				/* Évite les zooms automatiques non désirés sur iOS lors du focus sur les inputs (police >= 16px) */
+				font-size: 16px !important;
+			}
+
+			/* Assurer une zone de clic confortable pour les puces de catégories et boutons */
+			.btn,
+			.page-link {
+				cursor: pointer;
+			}
+		}
+	</style>
 {% endblock %}
 
 {% block javascripts %}
 	{{ parent() }}
 	<script>
-		document.querySelectorAll('.filter-btn').forEach(button => {
-button.addEventListener('click', () => {
-document.querySelectorAll('.filter-btn').forEach(btn => {
-btn.classList.remove('btn-dark');
-btn.classList.add('btn-outline-dark');
-});
-button.classList.remove('btn-outline-dark');
-button.classList.add('btn-dark');
+		document.addEventListener('turbo:load', initialiserRechercheOutils);
+document.addEventListener('DOMContentLoaded', initialiserRechercheOutils);
 
-const targetCat = button.getAttribute('data-category');
+function initialiserRechercheOutils() {
+const inputRecherche = document.getElementById('inputRecherche');
+const filtreVille = document.getElementById('filtre-ville');
+const selectCategorie = document.getElementById('selectCategorie');
+const selectEtat = document.getElementById('selectEtat');
+const searchForm = document.getElementById('searchForm');
+const containerResultats = document.getElementById('resultatsRecherche');
 
-document.querySelectorAll('.outil-card').forEach(card => {
-if (targetCat === 'all' || card.getAttribute('data-cat') === targetCat) {
-card.style.display = 'block';
-} else {
-card.style.display = 'none';
+if (searchForm && ! searchForm.dataset.ajaxInitialized) {
+searchForm.dataset.ajaxInitialized = "true";
+
+let timeoutId;
+
+function executerRechercheAjax() {
+const formData = new FormData(searchForm);
+const params = new URLSearchParams(formData);
+const url = searchForm.action + '?' + params.toString();
+
+// Mise à jour de l'URL du navigateur sans recharger la page
+window.history.replaceState({}, '', url);
+
+// Indiquer aux lecteurs d'écran que le contenu est en cours de chargement
+containerResultats.setAttribute('aria-busy', 'true');
+
+fetch(url, {
+headers: {
+'X-Requested-With': 'XMLHttpRequest'
 }
+}).then(response => response.text()).then(html => {
+const parser = new DOMParser();
+const doc = parser.parseFromString(html, 'text/html');
+const nouveauxResultats = doc.getElementById('resultatsRecherche');
+if (nouveauxResultats && containerResultats) {
+containerResultats.innerHTML = nouveauxResultats.innerHTML;
+}
+containerResultats.setAttribute('aria-busy', 'false');
+}).catch(error => {
+console.error('Erreur lors de la recherche AJAX :', error);
+containerResultats.setAttribute('aria-busy', 'false');
 });
-});
-});
+}
+
+// Fonction générique pour gérer le délai (debounce) sur les champs texte
+function declencherRechercheAvecDelai(delai = 300) {
+clearTimeout(timeoutId);
+timeoutId = setTimeout(() => {
+executerRechercheAjax();
+}, delai);
+}
+
+// 🔍 Recherche globale textuelle
+if (inputRecherche) {
+inputRecherche.addEventListener('input', () => declencherRechercheAvecDelai(500));
+}
+
+// 📍 Recherche par ville
+if (filtreVille) {
+filtreVille.addEventListener('input', () => declencherRechercheAvecDelai(300));
+}
+
+// 📁 Changement de catégorie
+if (selectCategorie) {
+selectCategorie.addEventListener('change', () => executerRechercheAjax());
+}
+
+// ⚡ Changement d'état
+if (selectEtat) {
+selectEtat.addEventListener('change', () => executerRechercheAjax());
+}
+}
+}
 	</script>
 {% endblock %}

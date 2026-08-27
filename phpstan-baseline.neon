@@ -1,0 +1,535 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Cannot call method getEmail\(\) on App\\Entity\\User\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: src/Controller/Admin/AdminController.php
+
+		-
+			message: '#^Class App\\Controller\\Admin\\CategorieCrudController extends generic class EasyCorp\\Bundle\\EasyAdminBundle\\Controller\\AbstractCrudController but does not specify its types\: TEntity$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Controller/Admin/CategorieCrudController.php
+
+		-
+			message: '#^Class App\\Controller\\Admin\\OutilCrudController extends generic class EasyCorp\\Bundle\\EasyAdminBundle\\Controller\\AbstractCrudController but does not specify its types\: TEntity$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Controller/Admin/OutilCrudController.php
+
+		-
+			message: '#^Method App\\Controller\\Admin\\OutilCrudController\:\:forcerRetourAction\(\) has parameter \$context with generic class EasyCorp\\Bundle\\EasyAdminBundle\\Context\\AdminContext but does not specify its types\: TEntity$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Controller/Admin/OutilCrudController.php
+
+		-
+			message: '#^Parameter \#1 \$proprietaire of method App\\Entity\\Outil\:\:setProprietaire\(\) expects App\\Entity\\User\|null, Symfony\\Component\\Security\\Core\\User\\UserInterface\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Controller/Admin/OutilCrudController.php
+
+		-
+			message: '#^Parameter \#1 \.\.\.\$addresses of method Symfony\\Component\\Mime\\Email\:\:to\(\) expects string\|Symfony\\Component\\Mime\\Address, string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Controller/Admin/OutilCrudController.php
+
+		-
+			message: '#^Property App\\Controller\\Admin\\OutilCrudController\:\:\$adminUrlGenerator has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Controller/Admin/OutilCrudController.php
+
+		-
+			message: '#^Property App\\Controller\\Admin\\OutilCrudController\:\:\$entityManager has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Controller/Admin/OutilCrudController.php
+
+		-
+			message: '#^Class App\\Controller\\Admin\\UserCrudController extends generic class EasyCorp\\Bundle\\EasyAdminBundle\\Controller\\AbstractCrudController but does not specify its types\: TEntity$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Controller/Admin/UserCrudController.php
+
+		-
+			message: '#^Binary operation "\." between ''Nouveau message …'' and mixed results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: src/Controller/LegalController.php
+
+		-
+			message: '#^Binary operation "\." between ''Prénom et nom \: '' and mixed results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: src/Controller/LegalController.php
+
+		-
+			message: '#^Binary operation "\." between non\-falsy\-string and mixed results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 3
+			path: src/Controller/LegalController.php
+
+		-
+			message: '#^Cannot access offset ''accountNumber'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Controller/LegalController.php
+
+		-
+			message: '#^Cannot access offset ''email'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 2
+			path: src/Controller/LegalController.php
+
+		-
+			message: '#^Cannot access offset ''fullName'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Controller/LegalController.php
+
+		-
+			message: '#^Cannot access offset ''message'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Controller/LegalController.php
+
+		-
+			message: '#^Cannot access offset ''subject'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Controller/LegalController.php
+
+		-
+			message: '#^Parameter \#1 \.\.\.\$addresses of method Symfony\\Component\\Mime\\Email\:\:from\(\) expects string\|Symfony\\Component\\Mime\\Address, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Controller/LegalController.php
+
+		-
+			message: '#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\.$#'
+			identifier: foreach.nonIterable
+			count: 3
+			path: src/Controller/MessageController.php
+
+		-
+			message: '#^Cannot call method getDestinataire\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: src/Controller/MessageController.php
+
+		-
+			message: '#^Cannot call method getOutil\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: src/Controller/MessageController.php
+
+		-
+			message: '#^Cannot call method isLu\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: src/Controller/MessageController.php
+
+		-
+			message: '#^Cannot call method setLu\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: src/Controller/MessageController.php
+
+		-
+			message: '#^Parameter \#1 \$contenu of method App\\Entity\\Message\:\:setContenu\(\) expects string, bool\|float\|int\|string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Controller/MessageController.php
+
+		-
+			message: '#^Parameter \#1 \$expediteur of method App\\Entity\\Message\:\:setExpediteur\(\) expects App\\Entity\\User\|null, Symfony\\Component\\Security\\Core\\User\\UserInterface\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Controller/MessageController.php
+
+		-
+			message: '#^Parameter \#1 \$object of method Doctrine\\Persistence\\ObjectManager\:\:remove\(\) expects object, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Controller/MessageController.php
+
+		-
+			message: '#^Parameter \#1 \$string of function trim expects string, bool\|float\|int\|string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Controller/MessageController.php
+
+		-
+			message: '#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\.$#'
+			identifier: foreach.nonIterable
+			count: 1
+			path: src/Controller/OutilController.php
+
+		-
+			message: '#^Binary operation "\." between array\|bool\|float\|int\|string\|UnitEnum\|null and ''/public/uploads…'' results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 6
+			path: src/Controller/OutilController.php
+
+		-
+			message: '#^Cannot access offset ''commentaire'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Controller/OutilController.php
+
+		-
+			message: '#^Cannot call method getProprietaire\(\) on App\\Entity\\Outil\|null\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: src/Controller/OutilController.php
+
+		-
+			message: '#^Cannot call method guessExtension\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: src/Controller/OutilController.php
+
+		-
+			message: '#^Cannot call method move\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: src/Controller/OutilController.php
+
+		-
+			message: '#^Cannot call method setEmprunteur\(\) on App\\Entity\\Outil\|null\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: src/Controller/OutilController.php
+
+		-
+			message: '#^If condition is always true\.$#'
+			identifier: if.alwaysTrue
+			count: 1
+			path: src/Controller/OutilController.php
+
+		-
+			message: '#^Parameter \#1 \$commentaire of method App\\Entity\\Historique\:\:setCommentaire\(\) expects string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Controller/OutilController.php
+
+		-
+			message: '#^Parameter \#1 \$proprietaire of method App\\Entity\\Outil\:\:setProprietaire\(\) expects App\\Entity\\User\|null, Symfony\\Component\\Security\\Core\\User\\UserInterface\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Controller/OutilController.php
+
+		-
+			message: '#^Parameter \#2 \$token of method Symfony\\Bundle\\FrameworkBundle\\Controller\\AbstractController\:\:isCsrfTokenValid\(\) expects string\|null, bool\|float\|int\|string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Controller/OutilController.php
+
+		-
+			message: '#^Parameter \#3 \$subject of function str_replace expects array\<string\>\|string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Controller/OutilController.php
+
+		-
+			message: '#^Call to an undefined method Symfony\\Component\\Security\\Core\\User\\UserInterface\:\:setRoles\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Controller/PaiementController.php
+
+		-
+			message: '#^Parameter \#1 \$apiKey of static method Stripe\\Stripe\:\:setApiKey\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Controller/PaiementController.php
+
+		-
+			message: '#^Parameter \#1 \$url of method Symfony\\Bundle\\FrameworkBundle\\Controller\\AbstractController\:\:redirect\(\) expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Controller/PaiementController.php
+
+		-
+			message: '#^Method App\\Controller\\RegistrationController\:\:register\(\) should return Symfony\\Component\\HttpFoundation\\Response but returns Symfony\\Component\\HttpFoundation\\Response\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Controller/RegistrationController.php
+
+		-
+			message: '#^Property App\\Entity\\Categorie\:\:\$id \(int\|null\) is never assigned int so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: src/Entity/Categorie.php
+
+		-
+			message: '#^Property App\\Entity\\Categorie\:\:\$outils with generic interface Doctrine\\Common\\Collections\\Collection does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Entity/Categorie.php
+
+		-
+			message: '#^Property App\\Entity\\Historique\:\:\$id \(int\|null\) is never assigned int so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: src/Entity/Historique.php
+
+		-
+			message: '#^Property App\\Entity\\Historique\:\:\$statut \(string\|null\) is never assigned null so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: src/Entity/Historique.php
+
+		-
+			message: '#^Property App\\Entity\\Message\:\:\$id \(int\|null\) is never assigned int so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: src/Entity/Message.php
+
+		-
+			message: '#^Method App\\Entity\\Outil\:\:getCaracteristiques\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/Outil.php
+
+		-
+			message: '#^Method App\\Entity\\Outil\:\:setCaracteristiques\(\) has parameter \$caracteristiques with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/Outil.php
+
+		-
+			message: '#^Property App\\Entity\\Outil\:\:\$caracteristiques type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/Outil.php
+
+		-
+			message: '#^Property App\\Entity\\Outil\:\:\$id \(int\|null\) is never assigned int so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: src/Entity/Outil.php
+
+		-
+			message: '#^Property App\\Entity\\Photo\:\:\$id \(int\|null\) is never assigned int so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: src/Entity/Photo.php
+
+		-
+			message: '#^Method App\\Entity\\User\:\:getUserIdentifier\(\) should return non\-empty\-string but returns string\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Entity/User.php
+
+		-
+			message: '#^Parameter \#2 \$data of function hash expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Entity/User.php
+
+		-
+			message: '#^Property App\\Entity\\User\:\:\$id \(int\|null\) is never assigned int so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: src/Entity/User.php
+
+		-
+			message: '#^Method App\\Kernel\:\:getAllowedEnvs\(\) is unused\.$#'
+			identifier: method.unused
+			count: 1
+			path: src/Kernel.php
+
+		-
+			message: '#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\.$#'
+			identifier: foreach.nonIterable
+			count: 1
+			path: src/Repository/HistoriqueRepository.php
+
+		-
+			message: '#^Cannot access offset ''mois'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Repository/HistoriqueRepository.php
+
+		-
+			message: '#^Cannot access offset ''total'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Repository/HistoriqueRepository.php
+
+		-
+			message: '#^Cannot cast mixed to int\.$#'
+			identifier: cast.int
+			count: 2
+			path: src/Repository/HistoriqueRepository.php
+
+		-
+			message: '#^Method App\\Repository\\HistoriqueRepository\:\:findDemandesEnAttenteByUser\(\) has parameter \$user with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Repository/HistoriqueRepository.php
+
+		-
+			message: '#^Method App\\Repository\\HistoriqueRepository\:\:findDemandesEnAttenteByUser\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/HistoriqueRepository.php
+
+		-
+			message: '#^Method App\\Repository\\HistoriqueRepository\:\:findDemandesEnAttenteByUser\(\) should return array but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Repository/HistoriqueRepository.php
+
+		-
+			message: '#^Method App\\Repository\\HistoriqueRepository\:\:findDerniersEmprunts\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/HistoriqueRepository.php
+
+		-
+			message: '#^Method App\\Repository\\HistoriqueRepository\:\:findDerniersEmprunts\(\) should return array but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Repository/HistoriqueRepository.php
+
+		-
+			message: '#^Method App\\Repository\\HistoriqueRepository\:\:findEmpruntsEnCoursByUser\(\) has parameter \$user with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Repository/HistoriqueRepository.php
+
+		-
+			message: '#^Method App\\Repository\\HistoriqueRepository\:\:findEmpruntsEnCoursByUser\(\) should return array\<App\\Entity\\Historique\> but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Repository/HistoriqueRepository.php
+
+		-
+			message: '#^Method App\\Repository\\HistoriqueRepository\:\:findEmpruntsEnRetard\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/HistoriqueRepository.php
+
+		-
+			message: '#^Method App\\Repository\\HistoriqueRepository\:\:findEmpruntsParMois\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/HistoriqueRepository.php
+
+		-
+			message: '#^Method App\\Repository\\HistoriqueRepository\:\:findRetards\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Repository/HistoriqueRepository.php
+
+		-
+			message: '#^Method App\\Repository\\MessageRepository\:\:countUnreadOrReceivedForUser\(\) has parameter \$user with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Repository/MessageRepository.php
+
+		-
+			message: '#^Method App\\Repository\\MessageRepository\:\:countUnreadOrReceivedForUser\(\) should return int but returns bool\|float\|int\|string\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Repository/MessageRepository.php
+
+		-
+			message: '#^Method App\\Repository\\OutilRepository\:\:countOutilsParCategorie\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/OutilRepository.php
+
+		-
+			message: '#^Method App\\Repository\\OutilRepository\:\:countOutilsParCategorie\(\) should return array but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Repository/OutilRepository.php
+
+		-
+			message: '#^Method App\\Repository\\OutilRepository\:\:findByFilters\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Repository/OutilRepository.php
+
+		-
+			message: '#^Method App\\Repository\\OutilRepository\:\:findTopOutils\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/OutilRepository.php
+
+		-
+			message: '#^Method App\\Repository\\OutilRepository\:\:findTopOutils\(\) should return array but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Repository/OutilRepository.php
+
+		-
+			message: '#^Strict comparison using \!\=\= between int\<min, \-1\>\|int\<1, max\> and ''all'' will always evaluate to true\.$#'
+			identifier: notIdentical.alwaysTrue
+			count: 1
+			path: src/Repository/OutilRepository.php
+
+		-
+			message: '#^Cannot call method getEmail\(\) on App\\Entity\\User\|null\.$#'
+			identifier: method.nonObject
+			count: 4
+			path: src/Service/NotificationService.php
+
+		-
+			message: '#^Cannot call method getProprietaire\(\) on App\\Entity\\Outil\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: src/Service/NotificationService.php
+
+		-
+			message: '#^Cannot call method modify\(\) on DateTimeImmutable\|null\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: src/Service/NotificationService.php
+
+		-
+			message: '#^Parameter \#1 \.\.\.\$addresses of method Symfony\\Component\\Mime\\Email\:\:to\(\) expects string\|Symfony\\Component\\Mime\\Address, string\|null given\.$#'
+			identifier: argument.type
+			count: 5
+			path: src/Service/NotificationService.php
+
+		-
+			message: '#^Call to an undefined method object\:\:find\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: tests/EmpruntTest.php
+
+		-
+			message: '#^Call to an undefined method object\:\:findOneBy\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: tests/EmpruntTest.php
+
+		-
+			message: '#^Call to an undefined method object\:\:flush\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: tests/EmpruntTest.php
+
+		-
+			message: '#^Call to an undefined method object\:\:persist\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: tests/EmpruntTest.php
+
+		-
+			message: '#^Parameter \#2 \$haystack of method PHPUnit\\Framework\\Assert\:\:assertStringContainsString\(\) expects string, string\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/OutilCatalogueTest.php
+
+		-
+			message: '#^Call to function method_exists\(\) with ''Symfony\\\\Component\\\\Dotenv\\\\Dotenv'' and ''bootEnv'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: tests/bootstrap.php

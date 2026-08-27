@@ -1,0 +1,72 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mon Profil - Eco-Partage{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h3 class="mb-0">Mon Profil Personnel</h3>
+                    <span class="badge bg-light text-primary">{{ app.user.email }}</span>
+                </div>
+                <div class="card-body">
+
+                    {# Affichage des messages flash de succès #}
+                    {% for label, messages in app.flashes %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ label }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
+                    {% endfor %}
+
+                    {{ form_start(profileForm) }}
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                {{ form_row(profileForm.prenom) }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                {{ form_row(profileForm.nom) }}
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form_row(profileForm.telephone) }}
+                        </div>
+
+                        <h5 class="mt-4 mb-3 border-bottom pb-2 text-muted">Adresse de livraison / Facturation</h5>
+
+                        <div class="mb-3">
+                            {{ form_row(profileForm.adresse) }}
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form_row(profileForm.complementAdresse) }}
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                {{ form_row(profileForm.codePostal) }}
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                {{ form_row(profileForm.ville) }}
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                {{ form_row(profileForm.pays) }}
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                            <a href="{{ path('app_outil_index') }}" class="btn btn-secondary me-md-2">Annuler</a>
+                            <button type="submit" class="btn btn-success">Enregistrer les modifications</button>
+                        </div>
+                    {{ form_end(profileForm) }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

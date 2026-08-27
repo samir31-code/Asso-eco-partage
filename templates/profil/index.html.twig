@@ -4,164 +4,297 @@
 {% endblock %}
 
 {% block body %}
-	<div
-		class="row">
-		{# 👤 En-tête Profil #}
-		<div class="col-12 mb-4">
-			<div class="bg-dark text-white p-4 rounded shadow-sm d-flex align-items-center justify-content-between flex-wrap gap-3">
-				<div>
-					<h1 class="h3 mb-1">👤 Espace Personnel</h1>
-					<p class="mb-0 text-muted">Ravi de vous revoir,
-						<strong class="text-white">{{ app.user.prenom }}
-							{{ app.user.nom }}</strong>
-					</p>
-				</div>
-				<div>
-					<span class="badge {{ 'ROLE_MEMBRE' in app.user.roles ? 'bg-success' : 'bg-warning text-dark' }} px-3 py-2 fs-6">
-						{{ 'ROLE_MEMBRE' in app.user.roles ? '⚡ Membre Actif (Cotisé)' : '🛑 Cotisation en attente' }}
-					</span>
-				</div>
-			</div>
-		</div>
+    <div class="row">
+        {# 👤 En-tête Profil #}
+        <div class="col-12 mb-4">
+            <div class="bg-dark text-white p-4 rounded shadow-sm d-flex align-items-center justify-content-between flex-wrap gap-3">
+                <div>
+                    <h1 class="h3 mb-1">👤 Espace Personnel</h1>
+                    <p class="mb-2 text-muted">Ravi de vous revoir,
+                        <strong class="text-white">
+                            {% if app.user.prenom is defined and app.user.nom is defined %}
+                                {{ app.user.prenom }} {{ app.user.nom }}
+                            {% else %}
+                                Compte Jury / Test
+                            {% endif %}
+                        </strong>
+                    </p>
+                    {% if app.user.prenom is defined %}
+                        <a href="{{ path('app_profile') }}" class="btn btn-sm btn-outline-warning d-inline-flex align-items-center gap-2">
+                            ⚙️ Modifier mes informations personnelles
+                        </a>
+                    {% endif %}
+                </div>
 
-		{# 🔄 SECTION 1 : Emprunts en cours #}
-		<div class="col-12 mb-5">
-			<h2 class="h4 fw-bold text-dark mb-3">📦 Mes emprunts en cours</h2>
-			{% if empruntsEnCours is empty %}
-				<div class="alert alert-light border text-center py-4 shadow-sm mb-0">
-					<span class="text-muted">Vous n'avez aucun outil emprunté pour le moment. Visitez le
-						<a href="{{ path('app_outil_index') }}" class="fw-bold text-info">catalogue</a>
-						pour vous équiper !</span>
-				</div>
-			{% else %}
-				<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
-					{% for historique in empruntsEnCours %}
-						<div class="col">
-							<div class="card h-100 shadow-sm border-start border-warning border-4">
-								<div class="card-body d-flex flex-column">
-									<h5 class="card-title fw-bold text-dark mb-1">{{ historique.outil.nom }}</h5>
-									<span class="badge bg-secondary align-self-start mb-2">{{ historique.outil.categorie }}</span>
-									<p class="text-muted small mb-3">Emprunté le
-										{{ historique.dateDebut|date('d/m/Y à H:i') }}</p>
+                <div class="d-flex align-items-center gap-3 flex-wrap">
+                    {% if is_granted('ROLE_ADMIN') %}
+                        <a href="/admin" class="btn btn-danger fw-bold shadow-sm d-inline-flex align-items-center gap-2">
+                            ⚙️ Accéder au Tableau d'Admin
+                        </a>
+                        <span class="badge bg-danger px-3 py-2 fs-6">
+                            🛡️ Administrateur
+                        </span>
+                    {% elseif app.user.roles is defined %}
+                        <span class="badge {{ 'ROLE_MEMBRE' in app.user.roles ? 'bg-success' : 'bg-warning text-dark' }} px-3 py-2 fs-6">
+                            {{ 'ROLE_MEMBRE' in app.user.roles ? '⚡ Membre Actif (Cotisé)' : '🛑 Cotisation en attente' }}
+                        </span>
+                    {% else %}
+                        <span class="badge bg-secondary px-3 py-2 fs-6">
+                            🔍 Mode Jury
+                        </span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
 
-									<div class="mt-auto pt-3 border-top d-flex gap-2">
-										<a href="{{ path('app_outil_show', {'id': historique.outil.id}) }}" class="btn btn-outline-info btn-sm flex-grow-1">Détails</a>
-										<a href="{{ path('app_outil_rendre', {'id': historique.outil.id}) }}" class="btn btn-warning text-dark fw-bold btn-sm flex-grow-1">🤝 Rendre</a>
-									</div>
-								</div>
-							</div>
-						</div>
-					{% endfor %}
-				</div>
-			{% endif %}
-		</div>
+        {# ⏳ SECTION : Mes demandes d'emprunt (Côté Emprunteur) #}
+        <div class="col-12 mb-5">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-clock me-2"></i>État de mes demandes d'emprunt</h5>
+                </div>
+                <div class="card-body">
+                    {% set mesDemandes = false %}
+                    {% if app.user.historiques is defined %}
+                        {% for h in app.user.historiques %}
+                            {% if h.statut in ['en_attente', 'refuse'] and h.dateFin is null %}
+                                {% set mesDemandes = true %}
+                                <div class="d-flex justify-content-between align-items-center border-bottom py-3">
+                                    <div>
+                                        <h6 class="mb-1">
+                                            <strong>{{ h.outil.nom }}</strong>
+                                        </h6>
+                                        <p class="text-muted mb-0 small">
+                                            Demandé le {{ h.dateDebut|date('d/m/Y à H:i') }}
+                                            {% if h.statut == 'en_attente' %}
+                                                — <em class="text-warning">En attente de l'accord du propriétaire</em>
+                                            {% elseif h.statut == 'refuse' %}
+                                                — <em class="text-danger fw-bold">❌ Demande refusée par le propriétaire</em>
+                                            {% endif %}
+                                        </p>
+                                    </div>
+                                    <div>
+                                        {% if h.statut == 'en_attente' %}
+                                            <span class="badge bg-warning text-dark px-3 py-2">En attente</span>
+                                        {% elseif h.statut == 'refuse' %}
+                                            <span class="badge bg-danger px-3 py-2">Refusé</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
 
-		{# 🛠️ NOUVELLE SECTION : Mes outils mis en partage #}
-		<div class="col-12 mb-5">
-			<div class="d-flex justify-content-between align-items-center mb-3">
-				<h2 class="h4 fw-bold text-dark m-0">🛠️ Mes outils mis en partage</h2>
-				<a href="{{ path('app_outil_new') }}" class="btn btn-sm btn-outline-primary">➕ Ajouter un outil</a>
-			</div>
+                    {% if not mesDemandes %}
+                        <p class="text-muted mb-0">Vous n'avez aucune demande en cours ou refusée actuellement.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
 
-			{% if mesOutils is empty %}
-				<div class="alert alert-light border text-center py-4 shadow-sm mb-0">
-					<span class="text-muted">Vous n'avez pas encore proposé d'outils au catalogue.</span>
-				</div>
-			{% else %}
-				<div class="card border-0 shadow-sm bg-white">
-					<div class="table-responsive">
-						<table class="table table-hover align-middle mb-0">
-							<thead class="table-light">
-								<tr>
-									<th>Nom de l'outil</th>
-									<th>Catégorie</th>
-									<th>Statut actuel</th>
-									<th class="text-end">Actions</th>
-								</tr>
-							</thead>
-							<tbody>
-								{% for outil in mesOutils %}
-									<tr>
-										<td>
-											<span class="fw-bold text-dark">{{ outil.nom }}</span>
-										</td>
-										<td>
-											<span class="badge bg-secondary">{{ outil.categorie }}</span>
-										</td>
-										<td>
-											{% if outil.emprunteur %}
-												<span class="badge bg-danger shadow-sm">❌ Emprunté par
-													{{ outil.emprunteur.prenom }}</span>
-											{% else %}
-												<span class="badge bg-success shadow-sm">✅ Disponible</span>
-											{% endif %}
-										</td>
-										<td class="text-end">
-											<a href="{{ path('app_outil_show', {'id': outil.id}) }}" class="btn btn-sm btn-light border">Voir</a>
-											<a href="{{ path('app_outil_edit', {'id': outil.id}) }}" class="btn btn-sm btn-outline-secondary">Modifier</a>
-										</td>
-									</tr>
-								{% endfor %}
-							</tbody>
-						</table>
-					</div>
-				</div>
-			{% endif %}
-		</div>
+        {# 📦 SECTION 1 : Mes emprunts en cours (Côté Emprunteur avec contact du propriétaire) #}
+        <div class="col-12 mb-5">
+            <h2 class="h4 fw-bold text-dark mb-3">📦 Mes emprunts en cours</h2>
+            {% if empruntsEnCours is empty %}
+                <div class="alert alert-light border text-center py-4 shadow-sm mb-0">
+                    <span class="text-muted">Vous n'avez aucun outil emprunté pour le moment. Visitez le
+                        <a href="{{ path('app_outil_index') }}" class="fw-bold text-info">catalogue</a>
+                        pour vous équiper !</span>
+                </div>
+            {% else %}
+                <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
+                    {% for historique in empruntsEnCours %}
+                        <div class="col">
+                            <div class="card h-100 shadow-sm border-start border-warning border-4">
+                                <div class="card-body d-flex flex-column">
+                                    <h5 class="card-title fw-bold text-dark mb-1">{{ historique.outil.nom }}</h5>
+                                    <span class="badge bg-secondary align-self-start mb-2">{{ historique.outil.categorie }}</span>
+                                    <p class="text-muted small mb-2">Emprunté le {{ historique.dateDebut|date('d/m/Y à H:i') }}</p>
 
-		{# 📊 SECTION 2 : Historique des partages #}
-		<div class="col-12">
-			<h2 class="h4 fw-bold text-dark mb-3">📜 Mon historique de locations</h2>
-			{% if empruntsTermines is empty %}
-				<div class="alert alert-light border text-center py-4 shadow-sm">
-					<span class="text-muted">Aucun historique d'emprunt disponible.</span>
-				</div>
-			{% else %}
-				<div class="card border-0 shadow-sm bg-white">
-					<div class="table-responsive">
-						<table class="table table-hover align-middle mb-0">
-							<thead class="table-light">
-								<tr>
-									<th>Outil</th>
-									<th>Période</th>
-									<th>Ma Note</th>
-									<th>Mon Commentaire</th>
-								</tr>
-							</thead>
-							<tbody>
-								{% for h in empruntsTermines %}
-									<tr>
-										<td>
-											<span class="fw-bold text-dark">{{ h.outil.nom }}</span>
-											<br><small class="text-muted">{{ h.outil.categorie }}</small>
-										</td>
-										<td class="small text-secondary">
-											Du
-											{{ h.dateDebut|date('d/m/Y') }}
-											au
-											{{ h.dateFin|date('d/m/Y') }}
-										</td>
-										<td>
-											{% if h.note is not null %}
-												<span class="text-warning">
-													{% for i in 1..h.note %}
-														<i class="fa-solid fa-star small"></i>
-													{% endfor %}
-												</span>
-											{% else %}
-												<span class="text-muted small italic">Pas de note</span>
-											{% endif %}
-										</td>
-										<td class="text-secondary small italic">
-											{{ h.commentaire ?: '<span class="text-muted opacity-50">Aucun texte laissé</span>'|raw }}
-										</td>
-									</tr>
-								{% endfor %}
-							</tbody>
-						</table>
-					</div>
-				</div>
-			{% endif %}
-		</div>
-	</div>
+                                    {# 📇 Coordonnées du propriétaire pour récupérer l'outil #}
+                                    <div class="bg-light p-2 rounded small mb-3">
+                                        <strong>Propriétaire :</strong> {{ historique.outil.proprietaire.prenom }} {{ historique.outil.proprietaire.nom }}<br>
+                                        📧 <a href="mailto:{{ historique.outil.proprietaire.email }}">{{ historique.outil.proprietaire.email }}</a><br>
+                                        {% if historique.outil.proprietaire.telephone %}
+                                            📱 <a href="tel:{{ historique.outil.proprietaire.telephone }}">{{ historique.outil.proprietaire.telephone }}</a>
+                                        {% endif %}
+                                    </div>
+
+                                    <div class="mt-auto pt-3 border-top d-flex gap-2">
+                                        <a href="{{ path('app_outil_show', {'id': historique.outil.id}) }}" class="btn btn-outline-info btn-sm flex-grow-1">Détails</a>
+                                        <a href="{{ path('app_outil_rendre', {'id': historique.outil.id}) }}" class="btn btn-warning text-dark fw-bold btn-sm flex-grow-1">🤝 Rendre</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+
+        {# 📥 SECTION : Demandes d'emprunt en attente pour mes outils (Côté Propriétaire avec contact de l'emprunteur) #}
+        <div class="col-12 mb-5">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0">
+                        <i class="fas fa-clock me-2"></i>Demandes d'emprunt en attente</h5>
+                </div>
+                <div class="card-body">
+                    {% set demandesEnAttenteExist = false %}
+
+                    {% if app.user.outils is defined %}
+                        {% for outil in app.user.outils %}
+                            {% for historique in outil.historiques %}
+                                {% if historique.statut == 'en_attente' %}
+                                    {% set demandesEnAttenteExist = true %}
+                                    <div class="d-flex justify-content-between align-items-center border-bottom py-3">
+                                        <div>
+                                            <h6 class="mb-1">
+                                                <strong>{{ outil.nom }}</strong>
+                                            </h6>
+                                            <p class="text-muted mb-0 small">
+                                                Demandé par :
+                                                <strong>{{ historique.user.prenom ?? '' }} {{ historique.user.nom ?? '' }}</strong>
+                                                le {{ historique.dateDebut|date('d/m/Y à H:i') }}<br>
+                                                {# 📇 Coordonnées de l'emprunteur pour le propriétaire #}
+                                                📧 <a href="mailto:{{ historique.user.email }}">{{ historique.user.email }}</a>
+                                                {% if historique.user.telephone %}
+                                                    | 📱 <a href="tel:{{ historique.user.telephone }}">{{ historique.user.telephone }}</a>
+                                                {% endif %}
+                                            </p>
+                                        </div>
+                                        <div class="d-flex gap-2">
+                                            <form action="{{ path('app_historique_valider', {'id': historique.id}) }}" method="post">
+                                                <input type="hidden" name="_token" value="{{ csrf_token('valider' ~ historique.id) }}">
+                                                <button type="submit" class="btn btn-success btn-sm">
+                                                    <i class="fas fa-check me-1"></i>Valider
+                                                </button>
+                                            </form>
+
+                                            <form action="{{ path('app_historique_refuser', {'id': historique.id}) }}" method="post">
+                                                <input type="hidden" name="_token" value="{{ csrf_token('refuser' ~ historique.id) }}">
+                                                <button type="submit" class="btn btn-danger btn-sm">
+                                                    <i class="fas fa-times me-1"></i>Refuser
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        {% endfor %}
+                    {% endif %}
+
+                    {% if not demandesEnAttenteExist %}
+                        <p class="text-muted mb-0">Aucune demande d'emprunt en attente pour le moment.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        {# 🛠️ SECTION : Mes outils mis en partage #}
+        <div class="col-12 mb-5">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h2 class="h4 fw-bold text-dark m-0">🛠️ Mes outils mis en partage</h2>
+                <a href="{{ path('app_outil_new') }}" class="btn btn-sm btn-outline-primary">➕ Ajouter un outil</a>
+            </div>
+
+            {% if mesOutils is empty %}
+                <div class="alert alert-light border text-center py-4 shadow-sm mb-0">
+                    <span class="text-muted">Vous n'avez pas encore proposé d'outils au catalogue.</span>
+                </div>
+            {% else %}
+                <div class="card border-0 shadow-sm bg-white">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Nom de l'outil</th>
+                                    <th>Catégorie</th>
+                                    <th>Statut actuel</th>
+                                    <th class="text-end">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for outil in mesOutils %}
+                                    <tr>
+                                        <td>
+                                            <span class="fw-bold text-dark">{{ outil.nom }}</span>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-secondary">{{ outil.categorie }}</span>
+                                        </td>
+                                        <td>
+                                            {% if outil.emprunteur %}
+                                                <span class="badge bg-danger shadow-sm">❌ Emprunté par
+                                                    {{ outil.emprunteur.prenom }}</span>
+                                            {% else %}
+                                                <span class="badge bg-success shadow-sm">✅ Disponible</span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="text-end">
+                                            <a href="{{ path('app_outil_show', {'id': outil.id}) }}" class="btn btn-sm btn-light border">Voir</a>
+                                            <a href="{{ path('app_outil_edit', {'id': outil.id}) }}" class="btn btn-sm btn-outline-secondary">Modifier</a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+
+        {# 📊 SECTION 2 : Historique des partages #}
+        <div class="col-12">
+            <h2 class="h4 fw-bold text-dark mb-3">📜 Mon historique de locations</h2>
+            {% if empruntsTermines is empty %}
+                <div class="alert alert-light border text-center py-4 shadow-sm">
+                    <span class="text-muted">Aucun historique d'emprunt disponible.</span>
+                </div>
+            {% else %}
+                <div class="card border-0 shadow-sm bg-white">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Outil</th>
+                                    <th>Période</th>
+                                    <th>Ma Note</th>
+                                    <th>Mon Commentaire</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for h in empruntsTermines %}
+                                    <tr>
+                                        <td>
+                                            <span class="fw-bold text-dark">{{ h.outil.nom }}</span>
+                                            <br><small class="text-muted">{{ h.outil.categorie }}</small>
+                                        </td>
+                                        <td class="small text-secondary">
+                                            Du {{ h.dateDebut|date('d/m/Y à H\\hi') }} au {{ h.dateFin|date('d/m/Y à H\\hi') }}
+                                        </td>
+                                        <td>
+                                            {% if h.note is not null %}
+                                                <span class="text-warning">
+                                                    {% for i in 1..h.note %}
+                                                        <i class="fa-solid fa-star small"></i>
+                                                    {% endfor %}
+                                                </span>
+                                            {% else %}
+                                                <span class="text-muted small italic">Pas de note</span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="text-secondary small italic">
+                                            {{ h.commentaire ?: '<span class="text-muted opacity-50">Aucun texte laissé</span>'|raw }}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
 {% endblock %}

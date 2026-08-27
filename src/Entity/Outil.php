@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Entity\User;
+use App\Entity\Photo;
+use App\Entity\Categorie;
 use App\Entity\Historique;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\DBAL\Types\Types;
@@ -24,8 +26,10 @@ class Outil
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $description = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $categorie = null;
+    // 🌟 RELATION MODIFIÉE : ManyToOne vers l'entité Categorie
+    #[ORM\ManyToOne(targetEntity: Categorie::class, inversedBy: 'outils')]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
+    private ?Categorie $categorie = null;
 
     #[ORM\Column(length: 255)]
     private ?string $etat = null;
@@ -46,9 +50,26 @@ class Outil
     #[ORM\OneToMany(targetEntity: Historique::class, mappedBy: 'outil')]
     private Collection $historiques;
 
+    #[ORM\Column(nullable: true)]
+    private ?array $caracteristiques = null;
+
+    /**
+     * @var Collection<int, Photo>
+     */
+    #[ORM\OneToMany(targetEntity: Photo::class, mappedBy: 'outil', orphanRemoval: true)]
+    private Collection $photos;
+
+    /**
+     * @var Collection<int, Message>
+     */
+    #[ORM\OneToMany(targetEntity: Message::class, mappedBy: 'outil')]
+    private Collection $messages;
+
     public function __construct()
     {
         $this->historiques = new ArrayCollection();
+        $this->photos = new ArrayCollection();
+        $this->messages = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -80,12 +101,14 @@ class Outil
         return $this;
     }
 
-    public function getCategorie(): ?string
+    // 🌟 GETTER MODIFIÉ : Retourne désormais un objet Categorie ou null
+    public function getCategorie(): ?Categorie
     {
         return $this->categorie;
     }
 
-    public function setCategorie(string $categorie): static
+    // 🌟 SETTER MODIFIÉ : Accepte désormais un objet Categorie ou null
+    public function setCategorie(?Categorie $categorie): static
     {
         $this->categorie = $categorie;
 
@@ -169,6 +192,7 @@ class Outil
 
         return $this;
     }
+
     /**
      * Calcule la note moyenne de cet outil à partir de son historique
      */
@@ -198,5 +222,77 @@ class Outil
 
         // On calcule la moyenne et on l'arrondit à 1 chiffre après la virgule (ex: 4.3)
         return round($somme / $compteurNotes, 1);
+    }
+
+    public function getCaracteristiques(): ?array
+    {
+        return $this->caracteristiques;
+    }
+
+    public function setCaracteristiques(?array $caracteristiques): static
+    {
+        $this->caracteristiques = $caracteristiques;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Photo>
+     */
+    public function getPhotos(): Collection
+    {
+        return $this->photos;
+    }
+
+    public function addPhoto(Photo $photo): static
+    {
+        if (!$this->photos->contains($photo)) {
+            $this->photos->add($photo);
+            $photo->setOutil($this);
+        }
+
+        return $this;
+    }
+
+    public function removePhoto(Photo $photo): static
+    {
+        if ($this->photos->removeElement($photo)) {
+            // set the owning side to null (unless already changed)
+            if ($photo->getOutil() === $this) {
+                $photo->setOutil(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Message>
+     */
+    public function getMessages(): Collection
+    {
+        return $this->messages;
+    }
+
+    public function addMessage(Message $message): static
+    {
+        if (!$this->messages->contains($message)) {
+            $this->messages->add($message);
+            $message->setOutil($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMessage(Message $message): static
+    {
+        if ($this->messages->removeElement($message)) {
+            // set the owning side to null (unless already changed)
+            if ($message->getOutil() === $this) {
+                $message->setOutil(null);
+            }
+        }
+
+        return $this;
     }
 }

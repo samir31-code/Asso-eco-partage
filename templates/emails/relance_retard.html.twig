@@ -1,0 +1,35 @@
+{# templates/emails/relance_retard.html.twig #}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>⚠️ Rappel : Retour d'outil en retard</title>
+</head>
+<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333333; background-color: #f8f9fa; padding: 20px; margin: 0;">
+    <div style="max-width: 600px; margin: 0 auto; background: #ffffff; padding: 30px; border-radius: 8px; border: 1px solid #e9ecef; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+
+        <div style="text-align: center; border-bottom: 2px solid #dc3545; padding-bottom: 15px; margin-bottom: 25px;">
+            <h1 style="color: #dc3545; margin: 0; font-size: 24px;">⚠️ Rappel de Retard</h1>
+        </div>
+
+        <h2 style="color: #212529; margin-top: 0;">Bonjour {{ user.prenom }},</h2>
+
+        <p>Sauf erreur de notre part, la date limite de retour pour l'emprunt de votre outil est dépassée :</p>
+
+        <div style="background-color: #fff5f5; padding: 20px; border-radius: 6px; margin: 20px 0; border-left: 4px solid #dc3545;">
+            <p style="margin: 0 0 10px 0; font-weight: bold; color: #212529;">🛠️ Outil : {{ outil.nom }}</p>
+            <p style="margin: 0; color: #b02a37; font-weight: bold;">📅 Date limite de retour dépassée le : {{ dateLimite|date('d/m/Y') }}</p>
+        </div>
+
+        <p>D'autres adhérents de l'association attendent peut-être de pouvoir utiliser cet outil. Nous vous remercions de bien vouloir le restituer dans les plus brefs délais.</p>
+
+        <p>Si vous rencontrez un problème ou si vous avez besoin d'un délai supplémentaire exceptionnel, n'hésitez pas à contacter l'équipe d'administration.</p>
+
+        <div style="margin-top: 30px; padding-top: 15px; border-top: 1px solid #e9ecef; text-align: center; color: #6c757d; font-size: 12px;">
+            <p style="margin: 0;">Cet e-mail est automatique, merci de ne pas y répondre.</p>
+            <p style="margin: 5px 0 0 0;">Eco-Partage - Ensemble, partageons nos ressources 🌍</p>
+        </div>
+
+    </div>
+</body>
+</html>

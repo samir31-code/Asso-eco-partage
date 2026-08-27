@@ -1,137 +1,255 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Détails de l'outil - Eco-Partage{% endblock %}
+{% block title %}Détails de l'outil - Eco-Partage
+{% endblock %}
 
 {% block body %}
-<div class="row justify-content-center mt-4">
-    <div class="col-md-10">
+	<div class="row justify-content-center mt-4">
+		<div class="col-md-10">
 
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h1 class="h2 text-dark m-0">🛠️ Fiche Outil : {{ outil.nom }}</h1>
-            <a href="{{ path('app_outil_index') }}" class="btn btn-outline-secondary">
-                ← Retour au catalogue
-            </a>
-        </div>
+			<div class="d-flex justify-content-between align-items-center mb-4">
+				<h1 class="h2 text-dark m-0">🛠️ Fiche Outil :
+					{{ outil.nom }}</h1>
+				<a href="{{ path('app_outil_index') }}" class="btn btn-outline-secondary">
+					← Retour au catalogue
+				</a>
+			</div>
 
-        <div class="card shadow-sm border-0 bg-white p-4 mb-4">
-            <div class="row">
-                <div class="col-md-4 text-center mb-3 mb-md-0">
-                    {% if outil.image %}
-                        <img src="{{ outil.image }}" alt="{{ outil.nom }}" class="img-fluid rounded img-thumbnail" style="max-height: 250px; object-fit: cover;">
-                    {% else %}
-                        <div class="bg-light rounded d-flex align-items-center justify-content-center text-muted" style="height: 200px;">
-                            <span>Pas d'image disponible</span>
-                        </div>
-                    {% endif %}
-                </div>
+			<div class="card shadow-sm border-0 bg-white p-4 mb-4">
+				<div
+					class="row">
 
-                <div class="col-md-8">
-                    <table class="table table-striped table-hover align-middle">
-                        <tbody>
-                            <tr>
-                                <th style="width: 30%">Propriétaire</th>
-                                <td>👤 {{ outil.proprietaire.prenom }} {{ outil.proprietaire.nom|upper }}</td>
-                            </tr>
-                            <tr>
-                                <th>Catégorie</th>
-                                <td>{{ outil.categorie }}</td>
-                            </tr>
-                            <tr>
-                                <th>État</th>
-                                <td>
-                                    <span class="badge bg-secondary">
-                                        {{ outil.etat }}
-                                    </span>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th>Description</th>
-                                <td>{{ outil.description }}</td>
-                            </tr>
-                        </tbody>
-                    </table>
+					{# 🎡 ZONE D'AFFICHAGE : NOUVEAU CARROUSEL OU ANCIENNE IMAGE #}
+					<div class="col-md-4 text-center mb-3 mb-md-0">
+						{% if outil.photos is not empty %}
+							{# CAS 1 : Nouvel outil - Carrousel Multi-photos #}
+							<div id="carouselOutil" class="carousel slide carousel-dark shadow-sm rounded bg-light p-2" data-bs-ride="carousel">
+								<div class="carousel-indicators mb-1">
+									{% for photo in outil.photos %}
+										<button type="button" data-bs-target="#carouselOutil" data-bs-slide-to="{{ loop.index0 }}" class="{% if loop.first %}active{% endif %}" aria-current="{% if loop.first %}true{% endif %}" aria-label="Slide {{ loop.index }}"></button>
+									{% endfor %}
+								</div>
 
-                    {# 🔒 BLOC ACTIONS SOCLE SECURISE (Appel du fragment réutilisable) #}
-                    <div class="card bg-light border-0 mt-4">
-                        <div class="card-body d-flex align-items-center justify-content-between p-3">
-                            {{ include('outil/_bouton_emprunt.html.twig', {'outil': outil}) }}
-                        </div>
-                    </div>
+								{# 🖼️ Les diapositives dynamiques (Slides) #}
+								<div class="carousel-inner" style="max-height: 400px; height: 300px;">
+									{% for photo in outil.photos %}
+										<div class="carousel-item {% if loop.first %}active{% endif %} h-100 w-100">
+											<img src="{{ asset('uploads/outils/' ~ photo.nom) }}" class="d-block h-100 w-100 object-contain p-2" alt="{{ outil.nom }}">
+										</div>
+									{% endfor %}
+								</div>
 
-                </div>
-            </div>
-        </div>
+								{# ⬅️ Flèches de navigation (si plus d'une photo) #}
+								{% if outil.photos|length > 1 %}
+									<button class="carousel-control-prev" type="button" data-bs-target="#carouselOutil" data-bs-slide="prev">
+										<span class="carousel-control-prev-icon" aria-hidden="true"></span>
+										<span class="visually-hidden">Précédent</span>
+									</button>
+									<button class="carousel-control-next" type="button" data-bs-target="#carouselOutil" data-bs-slide="next">
+										<span class="carousel-control-next-icon" aria-hidden="true"></span>
+										<span class="visually-hidden">Suivant</span>
+									</button>
+								{% endif %}
+							</div>
 
-        {# Options de modification #}
-        {% if app.user and app.user == outil.proprietaire %}
-            <div class="card border-warning bg-light p-3 mt-5">
-                <h5 class="card-title h6 text-warning-emphasis mb-3">Options du propriétaire</h5>
-                <div class="d-flex gap-2">
-                    <a href="{{ path('app_outil_edit', {'id': outil.id}) }}" class="btn btn-outline-warning btn-sm">
-                        Modifier la fiche
-                    </a>
-                </div>
-            </div>
-        {% endif %}
+						{% elseif outil.image %}
+							{# CAS 2 : Ancien outil - Affichage de l'image unique existante #}
+							<div class="bg-light shadow-sm rounded border p-2 d-flex align-items-center justify-content-center" style="height: 300px;">
+								<img src="{{ asset('uploads/outils/' ~ outil.image) }}" class="img-fluid h-100 w-100 object-contain p-2" alt="{{ outil.nom }}">
+							</div>
 
-    </div>
-</div>
+						{% else %}
+							{# CAS 3 : Vraiment aucune photo #}
+							<div class="bg-light text-muted d-flex align-items-center justify-content-center rounded border" style="height: 300px;">
+								<div class="text-center">
+									<i class="fas fa-tools fs-2 mb-2 opacity-50"></i>
+									<br><span class="small italic">Pas d'image disponible</span>
+								</div>
+							</div>
+						{% endif %}
+					</div>
 
-<hr class="my-5">
+					{# 📄 TABLEAU DES INFORMATIONS ET DESCRIPTION #}
+					<div class="col-md-8">
+						<table class="table table-striped table-hover align-middle mb-4">
+							<tbody>
+								<tr>
+									<th style="width: 30%">Propriétaire</th>
+									<td>👤
+										{{ outil.proprietaire.prenom }}
+										{{ outil.proprietaire.nom|upper }}</td>
+								</tr>
+								<tr>
+									<th>Catégorie</th>
+									<td>
+										{% if outil.categorie %}
+											<span class="badge shadow-sm" style="background-color: {{ outil.categorie.couleur ?? '#6c757d' }}; color: #fff;">
+												{{ outil.categorie.nom }}
+											</span>
+										{% else %}
+											<span class="badge bg-light text-muted border">Aucune catégorie</span>
+										{% endif %}
+									</td>
+								</tr>
+								<tr>
+									<th>État</th>
+									<td>
+										<span class="badge bg-secondary">
+											{{ outil.etat }}
+										</span>
+									</td>
+								</tr>
+								<tr>
+									<th>Description</th>
+									<td>{{ outil.description }}</td>
+								</tr>
+							</tbody>
+						</table>
 
-    {# 💬 Section des Avis & Commentaires #}
-    <div class="row mb-5">
-        <div class="col-12 col-lg-8 mx-auto">
-            <h3 class="h4 fw-bold text-dark mb-4">💬 Avis des utilisateurs</h3>
+						{# 🛠️ FICHE TECHNIQUE PERSONNALISÉE (DYNAMIQUE JSON) #}
+						<div class="card bg-light border-0 p-3 rounded-3 mb-4">
+							<h4 class="h6 fw-bold text-dark mb-3">⚙️ Caractéristiques spécifiques</h4>
 
-            {% set aDesAvis = false %}
+							{% if outil.caracteristiques is not empty %}
+								<table class="table table-sm table-borderless mb-0">
+									<tbody>
+										{% for cle, valeur in outil.caracteristiques %}
+											<tr>
+												<td class="fw-bold text-secondary" style="width: 30%;">{{ cle }}
+													:</td>
+												<td class="text-dark">{{ valeur }}</td>
+											</tr>
+										{% endfor %}
+									</tbody>
+								</table>
+							{% else %}
+								<p class="text-muted small mb-0">Aucune caractéristique technique supplémentaire pour cet outil.</p>
+							{% endif %}
+						</div>
 
-            <div class="d-flex flex-column gap-3">
-                {% for historique in outil.historiques %}
-                    {# On n'affiche que les lignes d'historique closes qui possèdent une note ou un commentaire #}
-                    {% if historique.dateFin is not null and (historique.note is not null or historique.commentaire is not null) %}
-                        {% set aDesAvis = true %}
+						{# 💬 BLOC DE MESSAGERIE / REMISE EN MAIN PROPRE #}
+						{% if app.user and outil.proprietaire != app.user %}
+							<div class="card shadow-sm border-0 mb-4 p-4 bg-light rounded-3">
+								<h5 class="fw-bold mb-2">💬 Organiser la remise en main propre</h5>
+								<p class="text-muted small mb-3">Envoyez un message à
+									<strong>{{ outil.proprietaire.prenom }}</strong>
+									pour convenir d'un lieu et d'un horaire.</p>
 
-                        <div class="card border-0 shadow-sm bg-light p-3">
-                            <div class="d-flex justify-content-between align-items-start mb-2 flex-wrap gap-2">
-                                <div>
-                                    <strong class="text-dark">{{ historique.user.prenom }}</strong>
-                                    <span class="text-muted small ms-2">le {{ historique.dateFin|date('d/m/Y') }}</span>
-                                </div>
+								{# AJOUT DE L'ID 'app-form' SUR LE FORMULAIRE #}
+								<form action="{{ path('app_message_envoyer', {'id': outil.id}) }}" method="post" id="app-form">
+									<div class="mb-3">
+										<textarea name="contenu" rows="3" class="form-control" placeholder="Bonjour, je souhaite vous emprunter cet outil. Serait-il possible de se retrouver..." required></textarea>
+									</div>
 
-                                {# Étoiles de l'avis #}
-                                {% if historique.note is not null %}
-                                    <span class="text-warning small">
-                                        {% for i in 1..historique.note %}
-                                            <i class="fa-solid fa-star"></i>
-                                        {% endfor %}
-                                        {% if historique.note < 5 %}
-                                            {% for i in (historique.note + 1)..5 %}
-                                                <i class="fa-regular fa-star text-muted opacity-50"></i>
-                                            {% endfor %}
-                                        {% endif %}
-                                    </span>
-                                {% endif %}
-                            </div>
+									{# AJOUT DES ATTRIBUTS DE CIBLAGE SUR LE BOUTON #}
+									<button
+										type="submit" class="btn btn-primary fw-bold px-4 rounded-pill" data-submit-btn>
+										{# Intégration du spinner juste ici #}
+										{% include 'components/_spinner.html.twig' %}
 
-                            <p class="card-text text-secondary mb-0 italic">
-                                {% if historique.commentaire is not empty %}
-                                    " {{ historique.commentaire }} "
-                                </p>
-                                {% else %}
-                                    <span class="text-muted small">L'utilisateur a laissé une note mais aucun commentaire écrit.</span>
-                                {% endif %}
-                        </div>
-                    {% endif %}
-                {% endfor %}
+										<span class="fa-solid fa-paper-plane me-2"></span>
+										<span data-btn-text>Envoyer le message</span>
+									</button>
+								</form>
+							</div>
+						{% elseif not app.user %}
+							...
+							<div class="alert alert-info mb-4 text-center">
+								<a href="{{ path('app_login') }}" class="fw-bold">Connectez-vous</a>
+								pour envoyer un message au propriétaire de cet outil.
+							</div>
+						{% endif %}
 
-                {# Si l'outil n'a aucun avis enregistré #}
-                {% if not aDesAvis %}
-                    <div class="alert alert-light text-center border py-4 mb-0">
-                        <span class="text-muted">📦 Aucun commentaire n'a encore été laissé pour cet outil. Soyez le premier à donner votre avis après l'avoir emprunté !</span>
-                    </div>
-                {% endif %}
-            </div>
-        </div>
-    </div>
+						{# 🔒 BLOC ACTIONS SOCLE SECURISE #}
+						<div class="card bg-light border-0 mt-4">
+							<div class="card-body d-flex align-items-center justify-content-between p-3">
+								{{ include('outil/_bouton_emprunt.html.twig', {'outil': outil}) }}
+							</div>
+						</div>
+
+					</div>
+				</div>
+			</div>
+
+			{# Options de modification #}
+			{% if app.user and app.user == outil.proprietaire %}
+				<div class="card border-warning bg-light p-3 mt-5">
+					<h5 class="card-title h6 text-warning-emphasis mb-3">Options du propriétaire</h5>
+					<div class="d-flex gap-2">
+						<a href="{{ path('app_outil_edit', {'id': outil.id}) }}" class="btn btn-outline-warning btn-sm">
+							Modifier la fiche
+						</a>
+					</div>
+				</div>
+			{% endif %}
+
+		</div>
+	</div>
+
+	<hr
+	class="my-5">
+
+	{# 💬 Section des Avis & Commentaires #}
+	<div class="row mb-5">
+		<div class="col-12 col-lg-8 mx-auto">
+			<h3 class="h4 fw-bold text-dark mb-4">💬 Avis des utilisateurs</h3>
+
+			{% set aDesAvis = false %}
+
+			<div class="d-flex flex-column gap-3">
+				{% for historique in outil.historiques %}
+					{% if historique.dateFin is not null and (historique.note is not null or historique.commentaire is not null) %}
+						{% set aDesAvis = true %}
+
+						<div class="card border-0 shadow-sm bg-light p-3">
+							<div class="d-flex justify-content-between align-items-start mb-2 flex-wrap gap-2">
+								<div>
+									<strong class="text-dark">{{ historique.user.prenom }}</strong>
+									<span class="text-muted small ms-2">le
+										{{ historique.dateFin|date('d/m/Y') }}</span>
+								</div>
+
+								{# Étoiles de l'avis #}
+								{% if historique.note is not null %}
+									<span class="text-warning small">
+										{% for i in 1..historique.note %}
+											<i class="fa-solid fa-star"></i>
+										{% endfor %}
+										{% if historique.note < 5 %}
+											{% for i in (historique.note + 1)..5 %}
+												<i class="fa-regular fa-star text-muted opacity-50"></i>
+											{% endfor %}
+										{% endif %}
+									</span>
+								{% endif %}
+							</div>
+
+							<p class="card-text text-secondary mb-0 italic">
+								{% if historique.commentaire is not empty %}
+									"{{ historique.commentaire }}"
+								{% else %}
+									<span class="text-muted small">L'utilisateur a laissé une note mais aucun commentaire écrit.</span>
+								{% endif %}
+							</p>
+						</div>
+					{% endif %}
+				{% endfor %}
+
+				{% if not aDesAvis %}
+					<div class="alert alert-light text-center border py-4 mb-0">
+						<span class="text-muted">📦 Aucun commentaire n'a encore été laissé pour cet outil. Soyez le premier à donner votre avis après l'avoir emprunté !</span>
+					</div>
+				{% endif %}
+			</div>
+		</div>
+	</div>
+{% endblock %}
+
+{# 🎨 CSS ADDITIONNEL POUR AJUSTER LES PROPORTIONS #}
+{% block styles %}
+	<style>
+		.object-contain {
+			object-fit: contain;
+		}
+	</style>
 {% endblock %}

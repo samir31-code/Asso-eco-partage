@@ -1,0 +1,35 @@
+{# templates/emails/notification_proprietaire.html.twig #}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Votre outil a été emprunté !</title>
+</head>
+<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333333; background-color: #f8f9fa; padding: 20px; margin: 0;">
+    <div style="max-width: 600px; margin: 0 auto; background: #ffffff; padding: 30px; border-radius: 8px; border: 1px solid #e9ecef; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+
+        <div style="text-align: center; border-bottom: 2px solid #198754; padding-bottom: 15px; margin-bottom: 25px;">
+            <h1 style="color: #198754; margin: 0; font-size: 24px;">🛠️ Eco-Partage</h1>
+        </div>
+
+        <h2 style="color: #212529; margin-top: 0;">Bonjour {{ proprietaire.prenom }},</h2>
+
+        <p>Bonne nouvelle ! Un membre de la communauté a besoin de votre matériel.</p>
+
+        <div style="background-color: #f1f3f5; padding: 20px; border-radius: 6px; margin: 20px 0; border-left: 4px solid #198754;">
+            <p style="margin: 0 0 10px 0;"><strong>Outil emprunté :</strong> {{ outil.nom }}</p>
+            <p style="margin: 0;"><strong>Emprunteur :</strong> {{ emprunteur.prenom }} {{ emprunteur.nom }}</p>
+        </div>
+
+        <p>L'emprunteur s'est engagé à prendre soin de votre outil et à vous le restituer propre et en bon état sous un délai maximum de 7 jours.</p>
+
+        <p>Merci pour votre contribution et votre esprit de partage au sein de l'association !</p>
+
+        <div style="margin-top: 30px; padding-top: 15px; border-top: 1px solid #e9ecef; text-align: center; color: #6c757d; font-size: 12px;">
+            <p style="margin: 0;">Cet e-mail est automatique, merci de ne pas y répondre.</p>
+            <p style="margin: 5px 0 0 0;">Eco-Partage - Ensemble, partageons nos ressources 🌍</p>
+        </div>
+
+    </div>
+</body>
+</html>

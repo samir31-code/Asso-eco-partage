@@ -3,13 +3,14 @@
 namespace App\Entity;
 
 use App\Entity\Outil;
-use App\Repository\UserRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
+use App\Entity\Historique;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\UserRepository;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
-use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
@@ -63,11 +64,42 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: Historique::class, mappedBy: 'user')]
     private Collection $historiques;
 
+    #[ORM\Column(length: 20)]
+    private ?string $telephone = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $adresse = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $complementAdresse = null;
+
+    #[ORM\Column(length: 10)]
+    private ?string $codePostal = null;
+
+    #[ORM\Column(length: 150)]
+    private ?string $ville = null;
+
+    #[ORM\Column(length: 100)]
+    private ?string $pays = null;
+
+    #[ORM\Column(type: 'boolean')]
+    private ?bool $isCotise = null;
+
+    /**
+     * @var Collection<int, Message>
+     */
+    #[ORM\OneToMany(targetEntity: Message::class, mappedBy: 'expediteur')]
+    private Collection $messages;
+
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $derniereActivite = null;
+
     public function __construct()
     {
         $this->outils = new ArrayCollection();
         $this->emprunts = new ArrayCollection();
         $this->historiques = new ArrayCollection();
+        $this->messages = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -267,6 +299,136 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
                 $historique->setUser(null);
             }
         }
+
+        return $this;
+    }
+
+    public function __toString(): string
+{
+    return $this->prenom . ' ' . $this->nom;
+}
+
+    public function getTelephone(): ?string
+    {
+        return $this->telephone;
+    }
+
+    public function setTelephone(string $telephone): static
+    {
+        $this->telephone = $telephone;
+
+        return $this;
+    }
+
+    public function getAdresse(): ?string
+    {
+        return $this->adresse;
+    }
+
+    public function setAdresse(string $adresse): static
+    {
+        $this->adresse = $adresse;
+
+        return $this;
+    }
+
+    public function getComplementAdresse(): ?string
+    {
+        return $this->complementAdresse;
+    }
+
+    public function setComplementAdresse(?string $complementAdresse): static
+    {
+        $this->complementAdresse = $complementAdresse;
+
+        return $this;
+    }
+
+    public function getCodePostal(): ?string
+    {
+        return $this->codePostal;
+    }
+
+    public function setCodePostal(string $codePostal): static
+    {
+        $this->codePostal = $codePostal;
+
+        return $this;
+    }
+
+    public function getVille(): ?string
+    {
+        return $this->ville;
+    }
+
+    public function setVille(string $ville): static
+    {
+        $this->ville = $ville;
+
+        return $this;
+    }
+
+    public function getPays(): ?string
+    {
+        return $this->pays;
+    }
+
+    public function setPays(string $pays): static
+    {
+        $this->pays = $pays;
+
+        return $this;
+    }
+
+    public function isCotise(): ?bool
+    {
+        return $this->isCotise;
+    }
+
+    public function setIsCotise(bool $isCotise): static
+    {
+        $this->isCotise = $isCotise;
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Message>
+     */
+    public function getMessages(): Collection
+    {
+        return $this->messages;
+    }
+
+    public function addMessage(Message $message): static
+    {
+        if (!$this->messages->contains($message)) {
+            $this->messages->add($message);
+            $message->setExpediteur($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMessage(Message $message): static
+    {
+        if ($this->messages->removeElement($message)) {
+            // set the owning side to null (unless already changed)
+            if ($message->getExpediteur() === $this) {
+                $message->setExpediteur(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getDerniereActivite(): ?\DateTimeImmutable
+    {
+        return $this->derniereActivite;
+    }
+
+    public function setDerniereActivite(?\DateTimeImmutable $derniereActivite): static
+    {
+        $this->derniereActivite = $derniereActivite;
 
         return $this;
     }

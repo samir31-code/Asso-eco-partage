@@ -31,7 +31,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  * @psalm-type ImportsConfig = list<string|array{
  *     resource: string,
  *     type?: string|null,
- *     ignore_errors?: bool,
+ *     ignore_errors?: bool|'not_found',
  * }>
  * @psalm-type ParametersConfig = array<string, scalar|\UnitEnum|array<scalar|\UnitEnum|array<mixed>|Param|null>|Param|null>
  * @psalm-type ArgumentsType = list<mixed>|array<string, mixed>
@@ -142,9 +142,9 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     set_locale_from_accept_language?: bool|Param, // Whether to use the Accept-Language HTTP header to set the Request locale (only when the "_locale" request attribute is not passed). // Default: false
  *     set_content_language_from_locale?: bool|Param, // Whether to set the Content-Language HTTP header on the Response using the Request locale. // Default: false
  *     enabled_locales?: list<scalar|Param|null>,
- *     trusted_hosts?: string|list<scalar|Param|null>,
+ *     trusted_hosts?: Param|string|list<scalar|Param|null>,
  *     trusted_proxies?: mixed, // Default: ["%env(default::SYMFONY_TRUSTED_PROXIES)%"]
- *     trusted_headers?: string|list<scalar|Param|null>,
+ *     trusted_headers?: Param|string|list<scalar|Param|null>,
  *     error_controller?: scalar|Param|null, // Default: "error_controller"
  *     handle_all_throwables?: bool|Param, // HttpKernel will handle all kinds of \Throwable. // Default: true
  *     csrf_protection?: bool|array{
@@ -208,23 +208,23 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *                 property?: scalar|Param|null,
  *                 service?: scalar|Param|null,
  *             },
- *             supports?: string|list<scalar|Param|null>,
+ *             supports?: Param|string|list<scalar|Param|null>,
  *             definition_validators?: list<scalar|Param|null>,
  *             support_strategy?: scalar|Param|null,
- *             initial_marking?: \BackedEnum|string|list<scalar|Param|null>,
+ *             initial_marking?: \BackedEnum|Param|string|list<scalar|Param|null>,
  *             events_to_dispatch?: null|list<string|Param>,
- *             places?: string|list<array{ // Default: []
+ *             places?: Param|string|list<array{ // Default: []
  *                 name?: scalar|Param|null,
  *                 metadata?: array<string, mixed>,
  *             }>,
  *             transitions?: list<array{ // Default: []
  *                 name?: string|Param,
  *                 guard?: string|Param, // An expression to block the transition.
- *                 from?: \BackedEnum|string|list<array{ // Default: []
+ *                 from?: \BackedEnum|Param|string|list<array{ // Default: []
  *                     place?: string|Param,
  *                     weight?: int|Param, // Default: 1
  *                 }>,
- *                 to?: \BackedEnum|string|list<array{ // Default: []
+ *                 to?: \BackedEnum|Param|string|list<array{ // Default: []
  *                     place?: string|Param,
  *                     weight?: int|Param, // Default: 1
  *                 }>,
@@ -264,7 +264,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     },
  *     request?: bool|array{ // Request configuration
  *         enabled?: bool|Param, // Default: false
- *         formats?: array<string, string|list<scalar|Param|null>>,
+ *         formats?: array<string, Param|string|list<scalar|Param|null>>,
  *     },
  *     assets?: bool|array{ // Assets configuration
  *         enabled?: bool|Param, // Default: true
@@ -274,7 +274,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         version_format?: scalar|Param|null, // Default: "%%s?%%s"
  *         json_manifest_path?: scalar|Param|null, // Default: null
  *         base_path?: scalar|Param|null, // Default: ""
- *         base_urls?: string|list<scalar|Param|null>,
+ *         base_urls?: Param|string|list<scalar|Param|null>,
  *         packages?: array<string, array{ // Default: []
  *             strict_mode?: bool|Param, // Throw an exception if an entry is missing from the manifest.json. // Default: false
  *             version_strategy?: scalar|Param|null, // Default: null
@@ -282,12 +282,12 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *             version_format?: scalar|Param|null, // Default: null
  *             json_manifest_path?: scalar|Param|null, // Default: null
  *             base_path?: scalar|Param|null, // Default: ""
- *             base_urls?: string|list<scalar|Param|null>,
+ *             base_urls?: Param|string|list<scalar|Param|null>,
  *         }>,
  *     },
  *     asset_mapper?: bool|array{ // Asset Mapper configuration
  *         enabled?: bool|Param, // Default: true
- *         paths?: string|array<string, scalar|Param|null>,
+ *         paths?: Param|string|array<string, scalar|Param|null>,
  *         excluded_patterns?: list<scalar|Param|null>,
  *         exclude_dotfiles?: bool|Param, // If true, any files starting with "." will be excluded from the asset mapper. // Default: true
  *         server?: bool|Param, // If true, a "dev server" will return the assets from the public directory (true in "debug" mode only by default). // Default: true
@@ -306,7 +306,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     },
  *     translator?: bool|array{ // Translator configuration
  *         enabled?: bool|Param, // Default: true
- *         fallbacks?: string|list<scalar|Param|null>,
+ *         fallbacks?: Param|string|list<scalar|Param|null>,
  *         logging?: bool|Param, // Default: false
  *         formatter?: scalar|Param|null, // Default: "translator.formatter.default"
  *         cache_dir?: scalar|Param|null, // Default: "%kernel.cache_dir%/translations"
@@ -325,7 +325,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *             domains?: list<scalar|Param|null>,
  *             locales?: list<scalar|Param|null>,
  *         }>,
- *         globals?: array<string, string|array{ // Default: []
+ *         globals?: array<string, Param|string|array{ // Default: []
  *             value?: mixed,
  *             message?: string|Param,
  *             parameters?: array<string, scalar|Param|null>,
@@ -335,7 +335,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     validation?: bool|array{ // Validation configuration
  *         enabled?: bool|Param, // Default: true
  *         enable_attributes?: bool|Param, // Default: true
- *         static_method?: string|list<scalar|Param|null>,
+ *         static_method?: Param|string|list<scalar|Param|null>,
  *         translation_domain?: scalar|Param|null, // Default: "validators"
  *         email_validation_mode?: "html5"|"html5-allow-no-tld"|"strict"|Param, // Default: "html5"
  *         mapping?: array{
@@ -396,7 +396,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         default_doctrine_dbal_provider?: scalar|Param|null, // Default: "database_connection"
  *         default_pdo_provider?: scalar|Param|null, // Default: null
  *         pools?: array<string, array{ // Default: []
- *             adapters?: string|list<scalar|Param|null>,
+ *             adapters?: Param|string|list<scalar|Param|null>,
  *             tags?: scalar|Param|null, // Default: null
  *             public?: bool|Param, // Default: false
  *             default_lifetime?: scalar|Param|null, // Default lifetime of the pool.
@@ -418,17 +418,17 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     web_link?: bool|array{ // Web links configuration
  *         enabled?: bool|Param, // Default: true
  *     },
- *     lock?: bool|string|array{ // Lock configuration
+ *     lock?: Param|bool|string|array{ // Lock configuration
  *         enabled?: bool|Param, // Default: false
- *         resources?: string|array<string, string|list<scalar|Param|null>>,
+ *         resources?: Param|string|array<string, Param|string|list<scalar|Param|null>>,
  *     },
- *     semaphore?: bool|string|array{ // Semaphore configuration
+ *     semaphore?: Param|bool|string|array{ // Semaphore configuration
  *         enabled?: bool|Param, // Default: false
- *         resources?: string|array<string, scalar|Param|null>,
+ *         resources?: Param|string|array<string, scalar|Param|null>,
  *     },
  *     messenger?: bool|array{ // Messenger configuration
  *         enabled?: bool|Param, // Default: true
- *         routing?: array<string, string|list<scalar|Param|null>>,
+ *         routing?: array<string, Param|string|list<scalar|Param|null>>,
  *         serializer?: array{
  *             default_serializer?: scalar|Param|null, // Service id to use as the default serializer for the transports. // Default: "messenger.transport.native_php_serializer"
  *             symfony_serializer?: array{
@@ -436,12 +436,12 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *                 context?: array<string, mixed>,
  *             },
  *         },
- *         transports?: array<string, string|array{ // Default: []
+ *         transports?: array<string, Param|string|array{ // Default: []
  *             dsn?: scalar|Param|null,
  *             serializer?: scalar|Param|null, // Service id of a custom serializer to use. // Default: null
  *             options?: array<string, mixed>,
  *             failure_transport?: scalar|Param|null, // Transport name to send failed messages to (after all retries have failed). // Default: null
- *             retry_strategy?: string|array{
+ *             retry_strategy?: Param|string|array{
  *                 service?: scalar|Param|null, // Service id to override the retry strategy entirely. // Default: null
  *                 max_retries?: int|Param, // Default: 3
  *                 delay?: int|Param, // Time in ms to delay (or the initial value when multiplier is used). // Default: 1000
@@ -452,15 +452,15 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *             rate_limiter?: scalar|Param|null, // Rate limiter name to use when processing messages. // Default: null
  *         }>,
  *         failure_transport?: scalar|Param|null, // Transport name to send failed messages to (after all retries have failed). // Default: null
- *         stop_worker_on_signals?: int|string|list<scalar|Param|null>,
+ *         stop_worker_on_signals?: Param|int|string|list<scalar|Param|null>,
  *         default_bus?: scalar|Param|null, // Default: null
  *         buses?: array<string, array{ // Default: {"messenger.bus.default":{"default_middleware":{"enabled":true,"allow_no_handlers":false,"allow_no_senders":true},"middleware":[]}}
- *             default_middleware?: bool|string|array{
+ *             default_middleware?: Param|bool|string|array{
  *                 enabled?: bool|Param, // Default: true
  *                 allow_no_handlers?: bool|Param, // Default: false
  *                 allow_no_senders?: bool|Param, // Default: true
  *             },
- *             middleware?: string|list<string|array{ // Default: []
+ *             middleware?: Param|string|list<Param|string|array{ // Default: []
  *                 id?: scalar|Param|null,
  *                 arguments?: list<mixed>,
  *             }>,
@@ -509,9 +509,9 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *             retry_failed?: bool|array{
  *                 enabled?: bool|Param, // Default: false
  *                 retry_strategy?: scalar|Param|null, // service id to override the retry strategy. // Default: null
- *                 http_codes?: int|string|array<string, array{ // Default: []
+ *                 http_codes?: Param|int|string|array<string, array{ // Default: []
  *                     code?: int|Param,
- *                     methods?: string|list<string|Param>,
+ *                     methods?: Param|string|list<string|Param>,
  *                 }>,
  *                 max_retries?: int|Param, // Default: 3
  *                 delay?: int|Param, // Time in ms to delay (or the initial value when multiplier is used). // Default: 1000
@@ -521,7 +521,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *             },
  *         },
  *         mock_response_factory?: scalar|Param|null, // `true` to always return empty 200 responses, or the id of the service to use to generate mock responses - which should be either an invokable or an iterable.
- *         scoped_clients?: array<string, string|array{ // Default: []
+ *         scoped_clients?: array<string, Param|string|array{ // Default: []
  *             scope?: scalar|Param|null, // The regular expression that the request URL must match before adding the other options. When none is provided, the base URI is used instead.
  *             base_uri?: scalar|Param|null, // The URI to resolve relative URLs, following rules in RFC 3985, section 2.
  *             auth_basic?: scalar|Param|null, // An HTTP Basic authentication "username:password".
@@ -563,9 +563,9 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *             retry_failed?: bool|array{
  *                 enabled?: bool|Param, // Default: false
  *                 retry_strategy?: scalar|Param|null, // service id to override the retry strategy. // Default: null
- *                 http_codes?: int|string|array<string, array{ // Default: []
+ *                 http_codes?: Param|int|string|array<string, array{ // Default: []
  *                     code?: int|Param,
- *                     methods?: string|list<string|Param>,
+ *                     methods?: Param|string|list<string|Param>,
  *                 }>,
  *                 max_retries?: int|Param, // Default: 3
  *                 delay?: int|Param, // Time in ms to delay (or the initial value when multiplier is used). // Default: 1000
@@ -582,10 +582,10 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         transports?: array<string, scalar|Param|null>,
  *         envelope?: array{ // Mailer Envelope configuration
  *             sender?: scalar|Param|null,
- *             recipients?: string|list<scalar|Param|null>,
- *             allowed_recipients?: string|list<scalar|Param|null>,
+ *             recipients?: Param|string|list<scalar|Param|null>,
+ *             allowed_recipients?: Param|string|list<scalar|Param|null>,
  *         },
- *         headers?: array<string, string|array{ // Default: []
+ *         headers?: array<string, Param|string|array{ // Default: []
  *             value?: mixed,
  *         }>,
  *         dkim_signer?: bool|array{ // DKIM signer configuration
@@ -622,20 +622,20 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         chatter_transports?: array<string, scalar|Param|null>,
  *         texter_transports?: array<string, scalar|Param|null>,
  *         notification_on_failed_messages?: bool|Param, // Default: false
- *         channel_policy?: array<string, string|list<scalar|Param|null>>,
+ *         channel_policy?: array<string, Param|string|list<scalar|Param|null>>,
  *         admin_recipients?: list<array{ // Default: []
  *             email?: scalar|Param|null,
  *             phone?: scalar|Param|null, // Default: ""
  *         }>,
  *     },
  *     rate_limiter?: bool|array{ // Rate limiter configuration
- *         enabled?: bool|Param, // Default: false
+ *         enabled?: bool|Param, // Default: true
  *         limiters?: array<string, array{ // Default: []
  *             lock_factory?: scalar|Param|null, // The service ID of the lock factory used by this limiter (or null to disable locking). // Default: "auto"
  *             cache_pool?: scalar|Param|null, // The cache pool to use for storing the current limiter state. // Default: "cache.rate_limiter"
  *             storage_service?: scalar|Param|null, // The service ID of a custom storage implementation, this precedes any configured "cache_pool". // Default: null
  *             policy?: "fixed_window"|"token_bucket"|"sliding_window"|"compound"|"no_limit"|Param, // The algorithm to be used by this limiter.
- *             limiters?: string|list<scalar|Param|null>,
+ *             limiters?: Param|string|list<scalar|Param|null>,
  *             limit?: int|Param, // The maximum allowed hits in a fixed interval or burst.
  *             interval?: scalar|Param|null, // Configures the fixed interval if "policy" is set to "fixed_window" or "sliding_window". The value must be a number followed by "second", "minute", "hour", "day", "week" or "month" (or their plural equivalent).
  *             rate?: array{ // Configures the fill rate if "policy" is set to "token_bucket".
@@ -661,20 +661,20 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *             allow_safe_elements?: bool|Param, // Allows "safe" elements and attributes. // Default: false
  *             allow_static_elements?: bool|Param, // Allows all static elements and attributes from the W3C Sanitizer API standard. // Default: false
  *             allow_elements?: array<string, mixed>,
- *             block_elements?: string|list<string|Param>,
- *             drop_elements?: string|list<string|Param>,
+ *             block_elements?: Param|string|list<string|Param>,
+ *             drop_elements?: Param|string|list<string|Param>,
  *             allow_attributes?: array<string, mixed>,
  *             drop_attributes?: array<string, mixed>,
  *             force_attributes?: array<string, array<string, string|Param>>,
  *             force_https_urls?: bool|Param, // Transforms URLs using the HTTP scheme to use the HTTPS scheme instead. // Default: false
- *             allowed_link_schemes?: string|list<string|Param>,
- *             allowed_link_hosts?: null|string|list<string|Param>,
+ *             allowed_link_schemes?: Param|string|list<string|Param>,
+ *             allowed_link_hosts?: Param|null|string|list<string|Param>,
  *             allow_relative_links?: bool|Param, // Allows relative URLs to be used in links href attributes. // Default: false
- *             allowed_media_schemes?: string|list<string|Param>,
- *             allowed_media_hosts?: null|string|list<string|Param>,
+ *             allowed_media_schemes?: Param|string|list<string|Param>,
+ *             allowed_media_hosts?: Param|null|string|list<string|Param>,
  *             allow_relative_medias?: bool|Param, // Allows relative URLs to be used in media source attributes (img, audio, video, ...). // Default: false
- *             with_attribute_sanitizers?: string|list<string|Param>,
- *             without_attribute_sanitizers?: string|list<string|Param>,
+ *             with_attribute_sanitizers?: Param|string|list<string|Param>,
+ *             without_attribute_sanitizers?: Param|string|list<string|Param>,
  *             max_input_length?: int|Param, // The maximum length allowed for the sanitized input. // Default: 0
  *         }>,
  *     },
@@ -704,7 +704,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  * @psalm-type DoctrineConfig = array{
  *     dbal?: array{
  *         default_connection?: scalar|Param|null,
- *         types?: array<string, string|array{ // Default: []
+ *         types?: array<string, Param|string|array{ // Default: []
  *             class?: scalar|Param|null,
  *         }>,
  *         driver_schemes?: array<string, scalar|Param|null>,
@@ -783,8 +783,11 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *                 MultipleActiveResultSets?: bool|Param, // Configuring MultipleActiveResultSets for the pdo_sqlsrv driver
  *                 instancename?: scalar|Param|null, // Optional parameter, complete whether to add the INSTANCE_NAME parameter in the connection. It is generally used to connect to an Oracle RAC server to select the name of a particular instance.
  *                 connectstring?: scalar|Param|null, // Complete Easy Connect connection descriptor, see https://docs.oracle.com/database/121/NETAG/naming.htm.When using this option, you will still need to provide the user and password parameters, but the other parameters will no longer be used. Note that when using this parameter, the getHost and getPort methods from Doctrine\DBAL\Connection will no longer function as expected.
+ *                 ...<string, mixed>
  *             }>,
+ *             ...<string, mixed>
  *         }>,
+ *         ...<string, mixed>
  *     },
  *     orm?: array{
  *         default_entity_manager?: scalar|Param|null,
@@ -795,17 +798,17 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *             evict_cache?: bool|Param, // Set to true to fetch the entity from the database instead of using the cache, if any // Default: false
  *         },
  *         entity_managers?: array<string, array{ // Default: []
- *             query_cache_driver?: string|array{
+ *             query_cache_driver?: Param|string|array{
  *                 type?: scalar|Param|null, // Default: null
  *                 id?: scalar|Param|null,
  *                 pool?: scalar|Param|null,
  *             },
- *             metadata_cache_driver?: string|array{
+ *             metadata_cache_driver?: Param|string|array{
  *                 type?: scalar|Param|null, // Default: null
  *                 id?: scalar|Param|null,
  *                 pool?: scalar|Param|null,
  *             },
- *             result_cache_driver?: string|array{
+ *             result_cache_driver?: Param|string|array{
  *                 type?: scalar|Param|null, // Default: null
  *                 id?: scalar|Param|null,
  *                 pool?: scalar|Param|null,
@@ -819,6 +822,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *                         }>,
  *                     }>,
  *                 }>,
+ *                 ...<string, mixed>
  *             },
  *             connection?: scalar|Param|null,
  *             class_metadata_factory_name?: scalar|Param|null, // Default: "Doctrine\\ORM\\Mapping\\ClassMetadataFactory"
@@ -833,7 +837,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *             schema_ignore_classes?: list<scalar|Param|null>,
  *             validate_xml_mapping?: bool|Param, // Set to "true" to opt-in to the new mapping driver mode that was added in Doctrine ORM 2.14 and will be mandatory in ORM 3.0. See https://github.com/doctrine/orm/pull/6728. // Default: false
  *             second_level_cache?: array{
- *                 region_cache_driver?: string|array{
+ *                 region_cache_driver?: Param|string|array{
  *                     type?: scalar|Param|null, // Default: null
  *                     id?: scalar|Param|null,
  *                     pool?: scalar|Param|null,
@@ -844,7 +848,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *                 enabled?: bool|Param, // Default: true
  *                 factory?: scalar|Param|null,
  *                 regions?: array<string, array{ // Default: []
- *                     cache_driver?: string|array{
+ *                     cache_driver?: Param|string|array{
  *                         type?: scalar|Param|null, // Default: null
  *                         id?: scalar|Param|null,
  *                         pool?: scalar|Param|null,
@@ -862,7 +866,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *                 }>,
  *             },
  *             hydrators?: array<string, scalar|Param|null>,
- *             mappings?: array<string, bool|string|array{ // Default: []
+ *             mappings?: array<string, Param|bool|string|array{ // Default: []
  *                 mapping?: scalar|Param|null, // Default: true
  *                 type?: scalar|Param|null,
  *                 dir?: scalar|Param|null,
@@ -875,14 +879,16 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *                 numeric_functions?: array<string, scalar|Param|null>,
  *                 datetime_functions?: array<string, scalar|Param|null>,
  *             },
- *             filters?: array<string, string|array{ // Default: []
+ *             filters?: array<string, Param|string|array{ // Default: []
  *                 class?: scalar|Param|null,
  *                 enabled?: bool|Param, // Default: false
  *                 parameters?: array<string, mixed>,
+ *                 ...<string, mixed>
  *             }>,
  *             identity_generation_preferences?: array<string, scalar|Param|null>,
  *         }>,
  *         resolve_target_entities?: array<string, scalar|Param|null>,
+ *         ...<string, mixed>
  *     },
  * }
  * @psalm-type DoctrineMigrationsConfig = array{
@@ -922,6 +928,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         id?: scalar|Param|null,
  *         type?: scalar|Param|null,
  *         value?: mixed,
+ *         ...<string, mixed>
  *     }>,
  *     autoescape_service?: scalar|Param|null, // Default: null
  *     autoescape_service_method?: scalar|Param|null, // Default: null
@@ -932,7 +939,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     auto_reload?: scalar|Param|null,
  *     optimizations?: int|Param,
  *     default_path?: scalar|Param|null, // The default path used to load templates. // Default: "%kernel.project_dir%/templates"
- *     file_name_pattern?: string|list<scalar|Param|null>,
+ *     file_name_pattern?: Param|string|list<scalar|Param|null>,
  *     paths?: array<string, mixed>,
  *     date?: array{ // The default format options used by the date filter.
  *         format?: scalar|Param|null, // Default: "F j, Y H:i"
@@ -1029,9 +1036,9 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         allow_if_all_abstain?: bool|Param, // Default: false
  *         allow_if_equal_granted_denied?: bool|Param, // Default: true
  *     },
- *     password_hashers?: array<string, string|array{ // Default: []
+ *     password_hashers?: array<string, Param|string|array{ // Default: []
  *         algorithm?: scalar|Param|null,
- *         migrate_from?: string|list<scalar|Param|null>,
+ *         migrate_from?: Param|string|list<scalar|Param|null>,
  *         hash_algorithm?: scalar|Param|null, // Name of hashing algorithm for PBKDF2 (i.e. sha256, sha512, etc..) See hash_algos() for a list of supported algorithms. // Default: "sha512"
  *         key_length?: scalar|Param|null, // Default: 40
  *         ignore_case?: bool|Param, // Default: false
@@ -1045,7 +1052,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     providers?: array<string, array{ // Default: []
  *         id?: scalar|Param|null,
  *         chain?: array{
- *             providers?: string|list<scalar|Param|null>,
+ *             providers?: Param|string|list<scalar|Param|null>,
  *         },
  *         entity?: array{
  *             class?: scalar|Param|null, // The full entity class name of your user class.
@@ -1055,7 +1062,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         memory?: array{
  *             users?: array<string, array{ // Default: []
  *                 password?: scalar|Param|null, // Default: null
- *                 roles?: string|list<scalar|Param|null>,
+ *                 roles?: Param|string|list<scalar|Param|null>,
  *             }>,
  *         },
  *         ldap?: array{
@@ -1064,7 +1071,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *             search_dn?: scalar|Param|null, // Default: null
  *             search_password?: scalar|Param|null, // Default: null
  *             extra_fields?: list<scalar|Param|null>,
- *             default_roles?: string|list<scalar|Param|null>,
+ *             default_roles?: Param|string|list<scalar|Param|null>,
  *             role_fetcher?: scalar|Param|null, // Default: null
  *             uid_key?: scalar|Param|null, // Default: "sAMAccountName"
  *             filter?: scalar|Param|null, // Default: "({uid_key}={user_identifier})"
@@ -1074,7 +1081,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     firewalls?: array<string, array{ // Default: []
  *         pattern?: scalar|Param|null,
  *         host?: scalar|Param|null,
- *         methods?: string|list<scalar|Param|null>,
+ *         methods?: Param|string|list<scalar|Param|null>,
  *         security?: bool|Param, // Default: true
  *         user_checker?: scalar|Param|null, // The UserChecker to use when authenticating users in this firewall. // Default: "security.user_checker"
  *         request_matcher?: scalar|Param|null,
@@ -1093,8 +1100,8 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *             path?: scalar|Param|null, // Default: "/logout"
  *             target?: scalar|Param|null, // Default: "/"
  *             invalidate_session?: bool|Param, // Default: true
- *             clear_site_data?: string|list<"*"|"cache"|"cookies"|"storage"|"clientHints"|"executionContexts"|"prefetchCache"|"prerenderCache"|Param>,
- *             delete_cookies?: string|array<string, array{ // Default: []
+ *             clear_site_data?: Param|string|list<"*"|"cache"|"cookies"|"storage"|"clientHints"|"executionContexts"|"prefetchCache"|"prerenderCache"|Param>,
+ *             delete_cookies?: Param|string|array<string, array{ // Default: []
  *                 path?: scalar|Param|null, // Default: null
  *                 domain?: scalar|Param|null, // Default: null
  *                 secure?: scalar|Param|null, // Default: false
@@ -1232,10 +1239,10 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *             success_handler?: scalar|Param|null,
  *             failure_handler?: scalar|Param|null,
  *             realm?: scalar|Param|null, // Default: null
- *             token_extractors?: string|list<scalar|Param|null>,
- *             token_handler?: string|array{
+ *             token_extractors?: Param|string|list<scalar|Param|null>,
+ *             token_handler?: Param|string|array{
  *                 id?: scalar|Param|null,
- *                 oidc_user_info?: string|array{
+ *                 oidc_user_info?: Param|string|array{
  *                     base_uri?: scalar|Param|null, // Base URI of the userinfo endpoint on the OIDC server, or the OIDC server URI to use the discovery (require "discovery" to be configured).
  *                     discovery?: array{ // Enable the OIDC discovery.
  *                         cache?: array{
@@ -1247,7 +1254,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *                 },
  *                 oidc?: array{
  *                     discovery?: array{ // Enable the OIDC discovery.
- *                         base_uri?: string|list<scalar|Param|null>,
+ *                         base_uri?: Param|string|list<scalar|Param|null>,
  *                         cache?: array{
  *                             id?: scalar|Param|null, // Cache service id to use to cache the OIDC discovery configuration.
  *                         },
@@ -1289,10 +1296,10 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         remember_me?: array{
  *             secret?: scalar|Param|null, // Default: "%kernel.secret%"
  *             service?: scalar|Param|null,
- *             user_providers?: string|list<scalar|Param|null>,
+ *             user_providers?: Param|string|list<scalar|Param|null>,
  *             catch_exceptions?: bool|Param, // Default: true
  *             signature_properties?: list<scalar|Param|null>,
- *             token_provider?: string|array{
+ *             token_provider?: Param|string|array{
  *                 service?: scalar|Param|null, // The service ID of a custom remember-me token provider.
  *                 doctrine?: bool|array{
  *                     enabled?: bool|Param, // Default: false
@@ -1317,14 +1324,14 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         path?: scalar|Param|null, // Use the urldecoded format. // Default: null
  *         host?: scalar|Param|null, // Default: null
  *         port?: int|Param, // Default: null
- *         ips?: string|list<scalar|Param|null>,
+ *         ips?: Param|string|list<scalar|Param|null>,
  *         attributes?: array<string, scalar|Param|null>,
  *         route?: scalar|Param|null, // Default: null
- *         methods?: string|list<scalar|Param|null>,
+ *         methods?: Param|string|list<scalar|Param|null>,
  *         allow_if?: scalar|Param|null, // Default: null
- *         roles?: string|list<scalar|Param|null>,
+ *         roles?: Param|string|list<scalar|Param|null>,
  *     }>,
- *     role_hierarchy?: array<string, string|list<scalar|Param|null>>,
+ *     role_hierarchy?: array<string, Param|string|list<scalar|Param|null>>,
  * }
  * @psalm-type MonologConfig = array{
  *     use_microseconds?: scalar|Param|null, // Default: true
@@ -1343,6 +1350,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *             enabled?: bool|Param|null, // Default: null
  *             date_format?: scalar|Param|null,
  *             remove_used_context_fields?: bool|Param,
+ *             ...<string, mixed>
  *         },
  *         path?: scalar|Param|null, // Default: "%kernel.logs_dir%/%kernel.environment%.log"
  *         file_permission?: scalar|Param|null, // Default: null
@@ -1403,18 +1411,18 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         delay_between_messages?: bool|Param, // Default: false
  *         topic?: int|Param, // Default: null
  *         factor?: int|Param, // Default: 1
- *         tags?: string|list<scalar|Param|null>,
+ *         tags?: Param|string|list<scalar|Param|null>,
  *         console_formatter_options?: mixed, // Default: []
  *         formatter?: scalar|Param|null,
  *         nested?: bool|Param, // Default: false
- *         publisher?: string|array{
+ *         publisher?: Param|string|array{
  *             id?: scalar|Param|null,
  *             hostname?: scalar|Param|null,
  *             port?: scalar|Param|null, // Default: 12201
  *             chunk_size?: scalar|Param|null, // Default: 1420
  *             encoder?: "json"|"compressed_json"|Param,
  *         },
- *         mongodb?: string|array{
+ *         mongodb?: Param|string|array{
  *             id?: scalar|Param|null, // ID of a MongoDB\Client service
  *             uri?: scalar|Param|null,
  *             username?: scalar|Param|null,
@@ -1422,7 +1430,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *             database?: scalar|Param|null, // Default: "monolog"
  *             collection?: scalar|Param|null, // Default: "logs"
  *         },
- *         elasticsearch?: string|array{
+ *         elasticsearch?: Param|string|array{
  *             id?: scalar|Param|null,
  *             hosts?: list<scalar|Param|null>,
  *             host?: scalar|Param|null,
@@ -1434,7 +1442,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         index?: scalar|Param|null, // Default: "monolog"
  *         document_type?: scalar|Param|null, // Default: "logs"
  *         ignore_error?: scalar|Param|null, // Default: false
- *         redis?: string|array{
+ *         redis?: Param|string|array{
  *             id?: scalar|Param|null,
  *             host?: scalar|Param|null,
  *             password?: scalar|Param|null, // Default: null
@@ -1442,17 +1450,17 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *             database?: scalar|Param|null, // Default: 0
  *             key_name?: scalar|Param|null, // Default: "monolog_redis"
  *         },
- *         predis?: string|array{
+ *         predis?: Param|string|array{
  *             id?: scalar|Param|null,
  *             host?: scalar|Param|null,
  *         },
  *         from_email?: scalar|Param|null,
- *         to_email?: string|list<scalar|Param|null>,
+ *         to_email?: Param|string|list<scalar|Param|null>,
  *         subject?: scalar|Param|null,
  *         content_type?: scalar|Param|null, // Default: null
  *         headers?: list<scalar|Param|null>,
  *         mailer?: scalar|Param|null, // Default: null
- *         email_prototype?: string|array{
+ *         email_prototype?: Param|string|array{
  *             id?: scalar|Param|null,
  *             method?: scalar|Param|null, // Default: null
  *         },
@@ -1463,9 +1471,10 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *             VERBOSITY_VERY_VERBOSE?: scalar|Param|null, // Default: "INFO"
  *             VERBOSITY_DEBUG?: scalar|Param|null, // Default: "DEBUG"
  *         },
- *         channels?: string|array{
+ *         channels?: Param|string|array{
  *             type?: scalar|Param|null,
  *             elements?: list<scalar|Param|null>,
+ *             ...<string, mixed>
  *         },
  *     }>,
  * }
@@ -1478,7 +1487,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     lifetime?: int|Param, // The length of time in seconds that a signed URI is valid for after it is created. // Default: 3600
  * }
  * @psalm-type TwigComponentConfig = array{
- *     defaults?: array<string, string|array{ // Default: []
+ *     defaults?: array<string, Param|string|array{ // Default: []
  *         template_directory?: scalar|Param|null, // Default: "components"
  *         name_prefix?: scalar|Param|null, // Default: ""
  *     }>,
@@ -1486,6 +1495,298 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     profiler?: bool|array{ // Enables the profiler for Twig Component
  *         enabled?: bool|Param, // Default: "%kernel.debug%"
  *         collect_components?: bool|Param, // Collect components instances // Default: true
+ *     },
+ * }
+ * @psalm-type KnpPaginatorConfig = array{
+ *     default_options?: array{
+ *         sort_field_name?: scalar|Param|null, // Default: "sort"
+ *         sort_direction_name?: scalar|Param|null, // Default: "direction"
+ *         filter_field_name?: scalar|Param|null, // Default: "filterField"
+ *         filter_value_name?: scalar|Param|null, // Default: "filterValue"
+ *         page_name?: scalar|Param|null, // Default: "page"
+ *         distinct?: bool|Param, // Default: true
+ *         page_out_of_range?: scalar|Param|null, // Default: "ignore"
+ *         default_limit?: scalar|Param|null, // Default: 10
+ *     },
+ *     template?: array{
+ *         pagination?: scalar|Param|null, // Default: "@KnpPaginator/Pagination/sliding.html.twig"
+ *         rel_links?: scalar|Param|null, // Default: "@KnpPaginator/Pagination/rel_links.html.twig"
+ *         filtration?: scalar|Param|null, // Default: "@KnpPaginator/Pagination/filtration.html.twig"
+ *         sortable?: scalar|Param|null, // Default: "@KnpPaginator/Pagination/sortable_link.html.twig"
+ *     },
+ *     page_range?: scalar|Param|null, // Default: 5
+ *     page_limit?: scalar|Param|null, // Default: null
+ *     convert_exception?: bool|Param, // Default: false
+ *     remove_first_page_param?: bool|Param, // Default: false
+ * }
+ * @psalm-type SentryConfig = array{
+ *     dsn?: scalar|Param|null, // If this value is not provided, the SDK will try to read it from the SENTRY_DSN environment variable. If that variable also does not exist, the SDK will not send any events.
+ *     register_error_listener?: bool|Param, // Default: true
+ *     register_error_handler?: bool|Param, // Default: true
+ *     logger?: scalar|Param|null, // The service ID of the PSR-3 logger used to log messages coming from the SDK client. Be aware that setting the same logger of the application may create a circular loop when an event fails to be sent. // Default: null
+ *     options?: array{
+ *         integrations?: mixed, // Default: []
+ *         default_integrations?: bool|Param,
+ *         prefixes?: list<scalar|Param|null>,
+ *         sample_rate?: float|Param, // The sampling factor to apply to events. A value of 0 will deny sending any event, and a value of 1 will send all events.
+ *         enable_tracing?: bool|Param,
+ *         traces_sample_rate?: float|Param, // The sampling factor to apply to transactions. A value of 0 will deny sending any transaction, and a value of 1 will send all transactions.
+ *         traces_sampler?: scalar|Param|null,
+ *         profiles_sample_rate?: float|Param, // The sampling factor to apply to profiles. A value of 0 will deny sending any profiles, and a value of 1 will send all profiles. Profiles are sampled in relation to traces_sample_rate
+ *         enable_logs?: bool|Param,
+ *         log_flush_threshold?: mixed, // Default: null
+ *         enable_metrics?: bool|Param, // Default: true
+ *         attach_stacktrace?: bool|Param,
+ *         attach_metric_code_locations?: bool|Param,
+ *         context_lines?: int|Param,
+ *         environment?: scalar|Param|null, // Default: "%kernel.environment%"
+ *         logger?: scalar|Param|null,
+ *         spotlight?: bool|Param,
+ *         spotlight_url?: scalar|Param|null,
+ *         release?: scalar|Param|null, // Default: "%env(default::SENTRY_RELEASE)%"
+ *         org_id?: int|Param,
+ *         server_name?: scalar|Param|null,
+ *         ignore_exceptions?: list<scalar|Param|null>,
+ *         ignore_transactions?: list<scalar|Param|null>,
+ *         before_send?: scalar|Param|null,
+ *         before_send_transaction?: scalar|Param|null,
+ *         before_send_check_in?: scalar|Param|null,
+ *         before_send_metrics?: scalar|Param|null,
+ *         before_send_log?: scalar|Param|null,
+ *         before_send_metric?: scalar|Param|null,
+ *         trace_propagation_targets?: mixed,
+ *         strict_trace_continuation?: bool|Param,
+ *         tags?: array<string, scalar|Param|null>,
+ *         error_types?: scalar|Param|null,
+ *         max_breadcrumbs?: int|Param,
+ *         before_breadcrumb?: mixed,
+ *         in_app_exclude?: list<scalar|Param|null>,
+ *         in_app_include?: list<scalar|Param|null>,
+ *         send_default_pii?: bool|Param,
+ *         max_value_length?: int|Param,
+ *         transport?: scalar|Param|null,
+ *         http_client?: scalar|Param|null,
+ *         http_proxy?: scalar|Param|null,
+ *         http_proxy_authentication?: scalar|Param|null,
+ *         http_connect_timeout?: float|Param, // The maximum number of seconds to wait while trying to connect to a server. It works only when using the default transport.
+ *         http_timeout?: float|Param, // The maximum execution time for the request+response as a whole. It works only when using the default transport.
+ *         http_ssl_verify_peer?: bool|Param,
+ *         http_compression?: bool|Param,
+ *         capture_silenced_errors?: bool|Param,
+ *         max_request_body_size?: "none"|"never"|"small"|"medium"|"always"|Param,
+ *         class_serializers?: array<string, scalar|Param|null>,
+ *     },
+ *     messenger?: bool|array{
+ *         enabled?: bool|Param, // Default: true
+ *         capture_soft_fails?: bool|Param, // Default: true
+ *         isolate_breadcrumbs_by_message?: bool|Param, // Default: false
+ *         isolate_context_by_message?: bool|Param, // Default: false
+ *     },
+ *     tracing?: bool|array{
+ *         enabled?: bool|Param, // Default: true
+ *         dbal?: bool|array{
+ *             enabled?: bool|Param, // Default: true
+ *             ignore_prepare_spans?: bool|Param, // Default: false
+ *             connections?: list<scalar|Param|null>,
+ *         },
+ *         twig?: bool|array{
+ *             enabled?: bool|Param, // Default: true
+ *         },
+ *         cache?: bool|array{
+ *             enabled?: bool|Param, // Default: true
+ *         },
+ *         http_client?: bool|array{
+ *             enabled?: bool|Param, // Default: true
+ *         },
+ *         console?: array{
+ *             excluded_commands?: list<scalar|Param|null>,
+ *         },
+ *     },
+ * }
+ * @psalm-type NelmioSecurityConfig = array{
+ *     signed_cookie?: array{
+ *         names?: list<scalar|Param|null>,
+ *         secret?: scalar|Param|null, // Default: "%kernel.secret%"
+ *         hash_algo?: scalar|Param|null,
+ *         legacy_hash_algo?: scalar|Param|null, // Fallback algorithm to allow for frictionless hash algorithm upgrades. Use with caution and as a temporary measure as it allows for downgrade attacks. // Default: null
+ *         separator?: scalar|Param|null, // Default: "."
+ *     },
+ *     clickjacking?: array{
+ *         hosts?: list<scalar|Param|null>,
+ *         paths?: array<string, array{ // Default: {"^/.*":{"header":"DENY"}}
+ *             header?: scalar|Param|null, // Default: "DENY"
+ *             ...<string, mixed>
+ *         }>,
+ *         content_types?: list<scalar|Param|null>,
+ *     },
+ *     external_redirects?: array{
+ *         abort?: bool|Param, // Default: false
+ *         override?: scalar|Param|null, // Default: null
+ *         forward_as?: scalar|Param|null, // Default: null
+ *         log?: bool|Param, // Default: false
+ *         allow_list?: list<scalar|Param|null>,
+ *     },
+ *     flexible_ssl?: bool|array{
+ *         enabled?: bool|Param, // Default: false
+ *         cookie_name?: scalar|Param|null, // Default: "auth"
+ *         unsecured_logout?: bool|Param, // Default: false
+ *     },
+ *     forced_ssl?: bool|array{
+ *         enabled?: bool|Param, // Default: false
+ *         hsts_max_age?: scalar|Param|null, // Default: null
+ *         hsts_subdomains?: bool|Param, // Default: false
+ *         hsts_preload?: bool|Param, // Default: false
+ *         allow_list?: list<scalar|Param|null>,
+ *         hosts?: list<scalar|Param|null>,
+ *         redirect_status_code?: scalar|Param|null, // Default: 302
+ *     },
+ *     content_type?: array{
+ *         nosniff?: bool|Param, // Default: false
+ *     },
+ *     xss_protection?: array{ // Deprecated: The "xss_protection" option is deprecated, use Content Security Policy without allowing "unsafe-inline" scripts instead.
+ *         enabled?: bool|Param, // Default: false
+ *         mode_block?: bool|Param, // Default: false
+ *         report_uri?: scalar|Param|null, // Default: null
+ *     },
+ *     csp?: bool|array{
+ *         enabled?: bool|Param, // Default: true
+ *         request_matcher?: scalar|Param|null, // Default: null
+ *         hosts?: list<scalar|Param|null>,
+ *         content_types?: list<scalar|Param|null>,
+ *         report_endpoint?: array{
+ *             log_channel?: scalar|Param|null, // Default: null
+ *             log_formatter?: scalar|Param|null, // Default: "nelmio_security.csp_report.log_formatter"
+ *             log_level?: "alert"|"critical"|"debug"|"emergency"|"error"|"info"|"notice"|"warning"|Param, // Default: "notice"
+ *             filters?: array{
+ *                 domains?: bool|Param, // Default: true
+ *                 schemes?: bool|Param, // Default: true
+ *                 browser_bugs?: bool|Param, // Default: true
+ *                 injected_scripts?: bool|Param, // Default: true
+ *             },
+ *             dismiss?: list<list<"default-src"|"base-uri"|"block-all-mixed-content"|"child-src"|"connect-src"|"font-src"|"form-action"|"frame-ancestors"|"frame-src"|"img-src"|"manifest-src"|"media-src"|"object-src"|"plugin-types"|"script-src"|"style-src"|"upgrade-insecure-requests"|"report-uri"|"worker-src"|"prefetch-src"|"report-to"|"*"|Param>>,
+ *         },
+ *         compat_headers?: bool|Param, // Default: true
+ *         report_logger_service?: scalar|Param|null, // Default: "logger"
+ *         hash?: array{
+ *             algorithm?: "sha256"|"sha384"|"sha512"|Param, // The algorithm to use for hashes // Default: "sha256"
+ *         },
+ *         report?: array{
+ *             level1_fallback?: bool|Param, // Provides CSP Level 1 fallback when using hash or nonce (CSP level 2) by adding 'unsafe-inline' source. See https://www.w3.org/TR/CSP2/#directive-script-src and https://www.w3.org/TR/CSP2/#directive-style-src // Default: true
+ *             browser_adaptive?: bool|array{ // Do not send directives that browser do not support
+ *                 enabled?: bool|Param, // Default: false
+ *                 parser?: scalar|Param|null, // Default: "nelmio_security.ua_parser.ua_php"
+ *             },
+ *             default-src?: list<scalar|Param|null>,
+ *             base-uri?: list<scalar|Param|null>,
+ *             block-all-mixed-content?: bool|Param, // Default: false
+ *             child-src?: list<scalar|Param|null>,
+ *             connect-src?: list<scalar|Param|null>,
+ *             font-src?: list<scalar|Param|null>,
+ *             form-action?: list<scalar|Param|null>,
+ *             frame-ancestors?: list<scalar|Param|null>,
+ *             frame-src?: list<scalar|Param|null>,
+ *             img-src?: list<scalar|Param|null>,
+ *             manifest-src?: list<scalar|Param|null>,
+ *             media-src?: list<scalar|Param|null>,
+ *             object-src?: list<scalar|Param|null>,
+ *             plugin-types?: list<scalar|Param|null>,
+ *             script-src?: list<scalar|Param|null>,
+ *             style-src?: list<scalar|Param|null>,
+ *             upgrade-insecure-requests?: bool|Param, // Default: false
+ *             report-uri?: Param|string|list<scalar|Param|null>,
+ *             worker-src?: list<scalar|Param|null>,
+ *             prefetch-src?: list<scalar|Param|null>,
+ *             report-to?: scalar|Param|null,
+ *         },
+ *         enforce?: array{
+ *             level1_fallback?: bool|Param, // Provides CSP Level 1 fallback when using hash or nonce (CSP level 2) by adding 'unsafe-inline' source. See https://www.w3.org/TR/CSP2/#directive-script-src and https://www.w3.org/TR/CSP2/#directive-style-src // Default: true
+ *             browser_adaptive?: bool|array{ // Do not send directives that browser do not support
+ *                 enabled?: bool|Param, // Default: false
+ *                 parser?: scalar|Param|null, // Default: "nelmio_security.ua_parser.ua_php"
+ *             },
+ *             default-src?: list<scalar|Param|null>,
+ *             base-uri?: list<scalar|Param|null>,
+ *             block-all-mixed-content?: bool|Param, // Default: false
+ *             child-src?: list<scalar|Param|null>,
+ *             connect-src?: list<scalar|Param|null>,
+ *             font-src?: list<scalar|Param|null>,
+ *             form-action?: list<scalar|Param|null>,
+ *             frame-ancestors?: list<scalar|Param|null>,
+ *             frame-src?: list<scalar|Param|null>,
+ *             img-src?: list<scalar|Param|null>,
+ *             manifest-src?: list<scalar|Param|null>,
+ *             media-src?: list<scalar|Param|null>,
+ *             object-src?: list<scalar|Param|null>,
+ *             plugin-types?: list<scalar|Param|null>,
+ *             script-src?: list<scalar|Param|null>,
+ *             style-src?: list<scalar|Param|null>,
+ *             upgrade-insecure-requests?: bool|Param, // Default: false
+ *             report-uri?: Param|string|list<scalar|Param|null>,
+ *             worker-src?: list<scalar|Param|null>,
+ *             prefetch-src?: list<scalar|Param|null>,
+ *             report-to?: scalar|Param|null,
+ *         },
+ *     },
+ *     referrer_policy?: bool|array{
+ *         enabled?: bool|Param, // Default: false
+ *         policies?: Param|string|list<scalar|Param|null>,
+ *     },
+ *     permissions_policy?: bool|array{
+ *         enabled?: bool|Param, // Default: false
+ *         policies?: array{
+ *             accelerometer?: mixed, // Default: null
+ *             ambient_light_sensor?: mixed, // Default: null
+ *             attribution_reporting?: mixed, // Default: null
+ *             autoplay?: mixed, // Default: null
+ *             bluetooth?: mixed, // Default: null
+ *             browsing_topics?: mixed, // Default: null
+ *             camera?: mixed, // Default: null
+ *             captured_surface_control?: mixed, // Default: null
+ *             compute_pressure?: mixed, // Default: null
+ *             cross_origin_isolated?: mixed, // Default: null
+ *             deferred_fetch?: mixed, // Default: null
+ *             deferred_fetch_minimal?: mixed, // Default: null
+ *             display_capture?: mixed, // Default: null
+ *             encrypted_media?: mixed, // Default: null
+ *             fullscreen?: mixed, // Default: null
+ *             gamepad?: mixed, // Default: null
+ *             geolocation?: mixed, // Default: null
+ *             gyroscope?: mixed, // Default: null
+ *             hid?: mixed, // Default: null
+ *             identity_credentials_get?: mixed, // Default: null
+ *             idle_detection?: mixed, // Default: null
+ *             interest_cohort?: mixed, // Default: null
+ *             language_detector?: mixed, // Default: null
+ *             local_fonts?: mixed, // Default: null
+ *             magnetometer?: mixed, // Default: null
+ *             microphone?: mixed, // Default: null
+ *             midi?: mixed, // Default: null
+ *             otp_credentials?: mixed, // Default: null
+ *             payment?: mixed, // Default: null
+ *             picture_in_picture?: mixed, // Default: null
+ *             publickey_credentials_create?: mixed, // Default: null
+ *             publickey_credentials_get?: mixed, // Default: null
+ *             screen_wake_lock?: mixed, // Default: null
+ *             serial?: mixed, // Default: null
+ *             speaker_selection?: mixed, // Default: null
+ *             storage_access?: mixed, // Default: null
+ *             summarizer?: mixed, // Default: null
+ *             translator?: mixed, // Default: null
+ *             usb?: mixed, // Default: null
+ *             web_share?: mixed, // Default: null
+ *             window_management?: mixed, // Default: null
+ *             xr_spatial_tracking?: mixed, // Default: null
+ *         },
+ *     },
+ *     cross_origin_isolation?: bool|array{
+ *         enabled?: bool|Param, // Default: false
+ *         paths?: array<string, array{ // Default: []
+ *             coep?: "unsafe-none"|"require-corp"|"credentialless"|Param, // Cross-Origin-Embedder-Policy (COEP) header value
+ *             coop?: "unsafe-none"|"same-origin-allow-popups"|"same-origin"|"noopener-allow-popups"|Param, // Cross-Origin-Opener-Policy (COOP) header value
+ *             corp?: "same-site"|"same-origin"|"cross-origin"|Param, // Cross-Origin-Resource-Policy (CORP) header value
+ *             report_only?: bool|Param, // Use Report-Only headers instead of enforcing (applies to COEP and COOP only) // Default: false
+ *             report_to?: scalar|Param|null, // Reporting endpoint name for violations (requires Reporting API configuration, applies to COEP and COOP only) // Default: null
+ *         }>,
  *     },
  * }
  * @psalm-type ConfigType = array{
@@ -1503,6 +1804,9 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     monolog?: MonologConfig,
  *     symfonycasts_verify_email?: SymfonycastsVerifyEmailConfig,
  *     twig_component?: TwigComponentConfig,
+ *     knp_paginator?: KnpPaginatorConfig,
+ *     sentry?: SentryConfig,
+ *     nelmio_security?: NelmioSecurityConfig,
  *     "when@dev"?: array{
  *         imports?: ImportsConfig,
  *         parameters?: ParametersConfig,
@@ -1521,6 +1825,9 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         maker?: MakerConfig,
  *         symfonycasts_verify_email?: SymfonycastsVerifyEmailConfig,
  *         twig_component?: TwigComponentConfig,
+ *         knp_paginator?: KnpPaginatorConfig,
+ *         sentry?: SentryConfig,
+ *         nelmio_security?: NelmioSecurityConfig,
  *     },
  *     "when@prod"?: array{
  *         imports?: ImportsConfig,
@@ -1537,6 +1844,9 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         monolog?: MonologConfig,
  *         symfonycasts_verify_email?: SymfonycastsVerifyEmailConfig,
  *         twig_component?: TwigComponentConfig,
+ *         knp_paginator?: KnpPaginatorConfig,
+ *         sentry?: SentryConfig,
+ *         nelmio_security?: NelmioSecurityConfig,
  *     },
  *     "when@test"?: array{
  *         imports?: ImportsConfig,
@@ -1554,6 +1864,9 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         monolog?: MonologConfig,
  *         symfonycasts_verify_email?: SymfonycastsVerifyEmailConfig,
  *         twig_component?: TwigComponentConfig,
+ *         knp_paginator?: KnpPaginatorConfig,
+ *         sentry?: SentryConfig,
+ *         nelmio_security?: NelmioSecurityConfig,
  *     },
  *     ...<string, ExtensionType|array{ // extra keys must follow the when@%env% pattern or match an extension alias
  *         imports?: ImportsConfig,

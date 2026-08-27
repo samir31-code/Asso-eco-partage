@@ -1,0 +1,27 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Page non trouvée - Eco-Partage{% endblock %}
+
+{% block body %}
+<div class="container text-center py-5 my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="mb-4">
+                <span class="display-1 fw-bold text-success">404</span>
+            </div>
+            <h1 class="h3 fw-bold text-dark mb-3">Oups ! Cette page s'est égarée...</h1>
+            <p class="text-muted mb-4">
+                La page que vous recherchez n'existe pas, a été déplacée ou le lien est invalide. Ne vous inquiétez pas, vous pouvez retrouver votre chemin vers nos outils.
+            </p>
+            <div class="d-flex justify-content-center gap-3">
+                <a href="{{ path('app_home') }}" class="btn btn-success rounded-pill px-4 fw-bold shadow-sm">
+                    <i class="fas fa-home me-2"></i> Retour à l'accueil
+                </a>
+                <a href="{{ path('app_outil_index') }}" class="btn btn-outline-dark rounded-pill px-4 fw-bold">
+                    <i class="fas fa-tools me-2"></i> Voir le catalogue
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

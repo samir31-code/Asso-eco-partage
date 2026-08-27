@@ -2,12 +2,12 @@
 
 namespace App\Controller;
 
-use App\Repository\HistoriqueRepository;
 use App\Repository\OutilRepository;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use App\Repository\HistoriqueRepository;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class ProfilController extends AbstractController
 {
@@ -17,11 +17,21 @@ class ProfilController extends AbstractController
     {
         $user = $this->getUser();
 
-        // 1. Emprunts actuellement en cours
-        $empruntsEnCours = $historiqueRepository->findBy([
-            'user' => $user,
-            'dateFin' => null
-        ], ['dateDebut' => 'DESC']);
+        // 🛡️ SÉCURITÉ : Si c'est un utilisateur en mémoire (ex: compte jury), on évite les requêtes Doctrine
+        if (!$user instanceof \App\Entity\User) {
+            return $this->render('profil/index.html.twig', [
+                'demandesEnAttente' => [],
+                'empruntsEnCours' => [],
+                'empruntsTermines' => [],
+                'mesOutils' => [],
+            ]);
+        }
+
+        // 0. Demandes en attente (que l'utilisateur soit le demandeur ou le propriétaire de l'outil)
+        $demandesEnAttente = $historiqueRepository->findDemandesEnAttenteByUser($user);
+
+        // 1. Emprunts actuellement en cours (Uniquement ceux qui sont VALIDÉS)
+        $empruntsEnCours = $historiqueRepository->findEmpruntsEnCoursByUser($user);
 
         // 2. Historique des emprunts terminés
         $empruntsTermines = $historiqueRepository->findBy([
@@ -32,12 +42,13 @@ class ProfilController extends AbstractController
             return $h->getDateFin() !== null;
         });
 
-        // 3. ✨ NOUVEAU : Récupérer mes outils mis en ligne
+        // 3. Mes outils mis en ligne
         $mesOutils = $outilRepository->findBy([
             'proprietaire' => $user
         ], ['nom' => 'ASC']);
 
         return $this->render('profil/index.html.twig', [
+            'demandesEnAttente' => $demandesEnAttente,
             'empruntsEnCours' => $empruntsEnCours,
             'empruntsTermines' => $empruntsTermines,
             'mesOutils' => $mesOutils,

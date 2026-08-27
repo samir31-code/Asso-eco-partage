@@ -1,0 +1,53 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Ma Messagerie - Eco-Partage{% endblock %}
+
+{% block body %}
+<div class="container my-4" style="max-width: 800px;">
+    <h1 class="h2 mb-4 fw-bold">📥 Mes Discussions</h1>
+
+    {% if conversations is not empty %}
+        <div class="list-group shadow-sm rounded-3 overflow-hidden">
+            {% for conv in conversations %}
+                <a href="{{ path('app_message_show', {'id': conv.outil.id}) }}" class="list-group-item list-group-item-action p-3 d-flex align-items-center gap-3">
+                    <div class="flex-shrink-0">
+                        {% if conv.outil.photos is defined and conv.outil.photos is not empty %}
+                            <img src="{{ asset('uploads/outils/' ~ conv.outil.photos|first.nom) }}" class="rounded object-fit-cover" style="width: 60px; height: 60px;" alt="{{ conv.outil.nom }}">
+                        {% elseif conv.outil.image is defined and conv.outil.image %}
+                            <img src="{{ asset('uploads/outils/' ~ conv.outil.image) }}" class="rounded object-fit-cover" style="width: 60px; height: 60px;" alt="{{ conv.outil.nom }}">
+                        {% else %}
+                            <div class="bg-light rounded d-flex align-items-center justify-content-center text-muted" style="width: 60px; height: 60px;">
+                                <i class="fa-solid fa-tools"></i>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="flex-grow-1">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <h5 class="mb-0 fw-bold text-dark">{{ conv.outil.nom }}</h5>
+                            <small class="text-muted">{{ conv.dernier_message.dateEnvoi|date('d/m/Y H:i') }}</small>
+                        </div>
+                        <p class="mb-0 text-muted small text-truncate" style="max-width: 500px;">
+                            <strong>{{ conv.dernier_message.expediteur == app.user ? 'Vous : ' : conv.dernier_message.expediteur.prenom ~ ' : ' }}</strong>
+                            {{ conv.dernier_message.contenu }}
+                        </p>
+                    </div>
+                </a>
+            {% endfor %}
+        </div>
+    {% else %}
+        {# 🌟 État vide soigné (Empty State) #}
+        <div class="text-center py-5 px-4 bg-light rounded-4 shadow-sm border-0 my-4">
+            <div class="mb-3">
+                <i class="fa-regular fa-comments text-muted display-4"></i>
+            </div>
+            <h3 class="fw-bold text-dark mb-2">Aucune discussion pour le moment</h3>
+            <p class="text-muted mb-4" style="max-width: 400px; margin: 0 auto;">
+                Vous n'avez pas encore échangé avec d'autres membres. Parcourez le catalogue pour emprunter un outil et démarrer une conversation !
+            </p>
+            <a href="{{ path('app_outil_index') }}" class="btn btn-primary rounded-pill px-4 fw-bold">
+                <i class="fa-solid fa-magnifying-glass me-2"></i> Explorer le catalogue
+            </a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
